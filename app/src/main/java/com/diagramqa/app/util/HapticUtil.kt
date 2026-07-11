@@ -20,12 +20,20 @@ object HapticUtil {
 
     fun confirm(view: View) {
         if (!isHapticsEnabled(view.context)) return
-        view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+        } else {
+            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+        }
     }
 
     fun reject(view: View) {
         if (!isHapticsEnabled(view.context)) return
-        view.performHapticFeedback(HapticFeedbackConstants.REJECT)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            view.performHapticFeedback(HapticFeedbackConstants.REJECT)
+        } else {
+            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+        }
     }
 
     fun tick(context: Context, durationMs: Long = 12L) {
