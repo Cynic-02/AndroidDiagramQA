@@ -32,6 +32,16 @@ class MainActivity : AppCompatActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefs = (application as DiagramQAApp).preferences
+        val mode = prefs.darkMode
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
+            when (mode) {
+                com.diagramqa.app.util.PreferencesManager.DARK_MODE_ON -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+                com.diagramqa.app.util.PreferencesManager.DARK_MODE_OFF -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+                else -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            }
+        )
+
         super.onCreate(savedInstanceState)
         b = ActivityMainBinding.inflate(layoutInflater)
         setContentView(b.root)

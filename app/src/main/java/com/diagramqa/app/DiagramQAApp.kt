@@ -41,17 +41,6 @@ class DiagramQAApp : Application() {
             defaultHandler?.uncaughtException(thread, throwable)
         }
 
-        applyTheme(preferences.darkMode)
-    }
-
-    private fun applyTheme(mode: Int) {
-        AppCompatDelegate.setDefaultNightMode(
-            when (mode) {
-                PreferencesManager.DARK_MODE_ON -> AppCompatDelegate.MODE_NIGHT_YES
-                PreferencesManager.DARK_MODE_OFF -> AppCompatDelegate.MODE_NIGHT_NO
-                else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            }
-        )
     }
 
     companion object {
