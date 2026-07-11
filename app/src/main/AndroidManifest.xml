@@ -82,6 +82,12 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <!-- Crash Report Activity -->
+        <activity
+            android:name=".CrashReportActivity"
+            android:exported="false"
+            android:theme="@style/Theme.DiagramQA" />
+
     </application>
 
 </manifest>

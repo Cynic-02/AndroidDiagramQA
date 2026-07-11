@@ -25,6 +25,24 @@ class DiagramQAApp : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            val sw = java.io.StringWriter()
+            val pw = java.io.PrintWriter(sw)
+            throwable.printStackTrace(pw)
+            val stackTraceString = sw.toString()
+
+            try {
+                CrashReportActivity.start(this, stackTraceString)
+            } catch (e: Exception) {
+                defaultHandler?.uncaughtException(thread, throwable)
+            }
+
+            android.os.Process.killProcess(android.os.Process.myPid())
+            java.lang.System.exit(10)
+        }
+
         applyTheme(preferences.darkMode)
     }
 
