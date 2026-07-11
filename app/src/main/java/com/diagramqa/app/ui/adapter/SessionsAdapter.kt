@@ -95,13 +95,13 @@ class SessionsAdapter(
                 when {
                     !session.isSynced -> {
                         text = "Offline"
-                        chipIcon = ctx.getDrawable(R.drawable.ic_status_offline)
+                        chipIcon = androidx.appcompat.content.res.AppCompatResources.getDrawable(ctx, R.drawable.ic_status_offline)
                         chipIconTint = ctx.getColorStateList(R.color.status_syncing)
                         setChipBackgroundColorResource(R.color.md_surface_container_high_light)
                     }
                     else -> {
                         text = "Synced"
-                        chipIcon = ctx.getDrawable(R.drawable.ic_status_online)
+                        chipIcon = androidx.appcompat.content.res.AppCompatResources.getDrawable(ctx, R.drawable.ic_status_online)
                         chipIconTint = ctx.getColorStateList(R.color.status_online)
                         setChipBackgroundColorResource(R.color.md_surface_container_high_light)
                     }

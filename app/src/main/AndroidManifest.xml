@@ -86,7 +86,7 @@
         <activity
             android:name=".CrashReportActivity"
             android:exported="false"
-            android:theme="@style/Theme.DiagramQA" />
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar" />
 
     </application>
 
