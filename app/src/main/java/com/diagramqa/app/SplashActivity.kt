@@ -19,13 +19,9 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Android 12 SplashScreen API — must be called before super.onCreate
-        val splash = installSplashScreen()
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-
-        // Keep splash visible while we warm up.
-        var ready = false
-        val keep = splash.setKeepOnScreenCondition { !ready }
 
         animateEntrance()
 
@@ -38,7 +34,6 @@ class SplashActivity : AppCompatActivity() {
                 app.database.sessionDao().observeSessions()
             }
             delay(1100) // minimum splash duration for the animation
-            ready = true
             navigate()
         }
     }
