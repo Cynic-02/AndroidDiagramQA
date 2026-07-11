@@ -28,19 +28,17 @@ class DiagramQAApp : Application() {
 
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            val sw = java.io.StringWriter()
-            val pw = java.io.PrintWriter(sw)
-            throwable.printStackTrace(pw)
-            val stackTraceString = sw.toString()
-
             try {
-                CrashReportActivity.start(this, stackTraceString)
-            } catch (e: Exception) {
-                defaultHandler?.uncaughtException(thread, throwable)
-            }
+                val sw = java.io.StringWriter()
+                val pw = java.io.PrintWriter(sw)
+                throwable.printStackTrace(pw)
+                val stackTraceString = sw.toString()
 
-            android.os.Process.killProcess(android.os.Process.myPid())
-            java.lang.System.exit(10)
+                val file = java.io.File(filesDir, "crash_report.txt")
+                file.writeText(stackTraceString)
+            } catch (_: Exception) {}
+
+            defaultHandler?.uncaughtException(thread, throwable)
         }
 
         applyTheme(preferences.darkMode)

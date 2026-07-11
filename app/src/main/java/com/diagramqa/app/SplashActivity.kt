@@ -10,10 +10,8 @@ import android.view.animation.OvershootInterpolator
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class SplashActivity : AppCompatActivity() {
 
@@ -21,18 +19,29 @@ class SplashActivity : AppCompatActivity() {
         // Android 12 SplashScreen API — must be called before super.onCreate
         installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        val crashFile = java.io.File(filesDir, "crash_report.txt")
+        if (crashFile.exists()) {
+            val trace = try {
+                val content = crashFile.readText()
+                crashFile.delete()
+                content
+            } catch (_: Exception) {
+                "Error reading crash file"
+            }
+            CrashReportActivity.start(this, trace)
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_splash)
 
         animateEntrance()
 
-        // Warm up the network monitor + DB before navigating
+        // Start network monitor and navigate after delay
         lifecycleScope.launch {
             val app = DiagramQAApp.get(this@SplashActivity)
             app.networkMonitor.start() // begin observing connectivity
-            withContext(Dispatchers.IO) {
-                // Touch DB so it's initialized on a background thread
-                app.database.sessionDao().observeSessions()
-            }
             delay(1100) // minimum splash duration for the animation
             navigate()
         }
