@@ -2,4 +2,9 @@
 <resources>
     <!-- Dark theme overrides — uses Material 3 dark color set -->
     <style name="Theme.DiagramQA" parent="Theme.DiagramQA.Dark" />
+
+    <color name="glass_surface">#B31C2425</color>
+    <color name="glass_surface_strong">#D9263031</color>
+    <color name="glass_stroke">#33FFFFFF</color>
+    <color name="glass_highlight">#22FFFFFF</color>
 </resources>

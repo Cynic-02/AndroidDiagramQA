@@ -44,15 +44,23 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
 
     fun deleteSession(session: SessionEntity) {
         viewModelScope.launch {
-            repo.deleteSession(session)
-            _toast.value = "Session deleted"
+            try {
+                repo.deleteSession(session)
+                _toast.value = "Session deleted"
+            } catch (t: Throwable) {
+                _toast.value = "Could not delete session: ${t.message}"
+            }
         }
     }
 
     fun clearAll() {
         viewModelScope.launch {
-            repo.clearAllSessions()
-            _toast.value = "All sessions cleared"
+            try {
+                repo.clearAllSessions()
+                _toast.value = "All sessions cleared"
+            } catch (t: Throwable) {
+                _toast.value = "Could not clear sessions: ${t.message}"
+            }
         }
     }
 

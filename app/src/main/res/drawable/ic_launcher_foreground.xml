@@ -4,7 +4,7 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
     <!-- Background gradient (violet) -->
-    <path android:pathData="M0,0h108v108h-108z" android:fillColor="#FF5B4DFF" />
+    <path android:pathData="M0,0h108v108h-108z" android:fillColor="#FF006D77" />
 
     <!-- Decorative grid pattern (diagram vibe) -->
     <group>
@@ -15,9 +15,9 @@
     <!-- Stylized diagram (flowchart nodes) -->
     <path android:fillColor="#FFFFFFFF"
           android:pathData="M38,38 m0,0 a4,4 0 0 1 4,-4 h10 a4,4 0 0 1 4,4 v6 a4,4 0 0 1 -4,4 h-10 a4,4 0 0 1 -4,-4 z"/>
-    <path android:fillColor="#FFFF6B9D"
+    <path android:fillColor="#FF2F5DA8"
           android:pathData="M54,52 m0,0 a4,4 0 0 1 4,-4 h10 a4,4 0 0 1 4,4 v6 a4,4 0 0 1 -4,4 h-10 a4,4 0 0 1 -4,-4 z"/>
-    <path android:fillColor="#FF1EC8A5"
+    <path android:fillColor="#FFFFB95C"
           android:pathData="M38,66 m0,0 a4,4 0 0 1 4,-4 h10 a4,4 0 0 1 4,4 v6 a4,4 0 0 1 -4,4 h-10 a4,4 0 0 1 -4,-4 z"/>
 
     <!-- Connectors -->

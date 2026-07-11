@@ -5,13 +5,14 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_app_canvas"
     android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
+        android:background="@drawable/bg_glass_bar"
         app:liftOnScroll="true"
         app:liftOnScrollTargetViewId="@id/recyclerChat">
 
@@ -128,6 +129,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical"
+        android:layout_marginStart="28dp"
+        android:layout_marginEnd="28dp"
+        android:background="@drawable/bg_glass_surface"
         android:padding="36dp"
         android:visibility="gone"
         tools:visibility="visible">
@@ -193,7 +197,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="?attr/colorSurface"
+        android:background="@drawable/bg_glass_bar"
         android:elevation="8dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"

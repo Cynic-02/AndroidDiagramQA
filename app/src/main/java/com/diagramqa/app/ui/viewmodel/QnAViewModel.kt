@@ -10,6 +10,7 @@ import com.diagramqa.app.DiagramQAApp
 import com.diagramqa.app.data.local.MessageEntity
 import com.diagramqa.app.data.local.SessionEntity
 import com.diagramqa.app.data.repository.Result
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class QnAViewModel(app: Application) : AndroidViewModel(app) {
@@ -37,13 +38,17 @@ class QnAViewModel(app: Application) : AndroidViewModel(app) {
     private val _syncedToast = MutableLiveData(false)
     val syncedToast: LiveData<Boolean> = _syncedToast
 
+    private var sessionJob: Job? = null
+    private var messagesJob: Job? = null
+
     fun loadSession(id: String) {
         if (_sessionId.value != id) _sessionId.value = id
-        // Subscribe to flows for this session
-        viewModelScope.launch {
+        sessionJob?.cancel()
+        messagesJob?.cancel()
+        sessionJob = viewModelScope.launch {
             repo.observeSession(id).collect { _session.postValue(it) }
         }
-        viewModelScope.launch {
+        messagesJob = viewModelScope.launch {
             repo.observeMessages(id).collect { _messages.postValue(it) }
         }
     }
@@ -69,34 +74,44 @@ class QnAViewModel(app: Application) : AndroidViewModel(app) {
         }
         _sending.value = true
         viewModelScope.launch {
-            when (val r = repo.askQuestion(sid, question, getApplication())) {
-                is Result.Success -> { /* UI auto-updates via messages LiveData */ }
-                is Result.Error -> _toast.value = r.message
-                Result.Offline -> _toast.value = "Queued — will send when you reconnect"
+            try {
+                when (val r = repo.askQuestion(sid, question, getApplication())) {
+                    is Result.Success -> { /* UI auto-updates via messages LiveData */ }
+                    is Result.Error -> _toast.value = r.message
+                    Result.Offline -> _toast.value = "Queued - will send when you reconnect"
+                }
+            } catch (t: Throwable) {
+                _toast.value = t.message ?: "Could not send question"
+            } finally {
+                _sending.value = false
             }
-            _sending.value = false
         }
     }
 
     fun clearChat() {
         val sid = _sessionId.value ?: return
         viewModelScope.launch {
-            repo.clearChat(sid)
-            _toast.value = "Chat cleared"
+            try {
+                repo.clearChat(sid)
+                _toast.value = "Chat cleared"
+            } catch (t: Throwable) {
+                _toast.value = "Could not clear chat: ${t.message}"
+            }
         }
     }
 
     fun toastShown() { _toast.value = null }
     fun syncedToastShown() { _syncedToast.value = false }
 
-    /**
-     * Called when the network monitor reports connectivity restored.
-     */
     fun onConnectionRestored() {
-        val sid = _sessionId.value ?: return
+        _sessionId.value ?: return
         viewModelScope.launch {
-            val count = repo.syncPending(getApplication())
-            if (count > 0) _syncedToast.value = true
+            try {
+                val count = repo.syncPending(getApplication())
+                if (count > 0) _syncedToast.value = true
+            } catch (t: Throwable) {
+                _toast.value = t.message ?: "Could not sync pending questions"
+            }
         }
     }
 }

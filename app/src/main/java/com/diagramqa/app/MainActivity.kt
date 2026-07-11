@@ -1,6 +1,8 @@
 package com.diagramqa.app
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -9,6 +11,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,16 +23,40 @@ import com.diagramqa.app.ui.viewmodel.HomeViewModel
 import com.diagramqa.app.util.HapticUtil
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var b: ActivityMainBinding
     private val vm: HomeViewModel by viewModels()
     private lateinit var adapter: SessionsAdapter
+    private var pendingCameraUri: Uri? = null
+    private var pendingCameraFile: File? = null
 
     private val pickImage =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             if (uri != null) startNewSession(uri)
+        }
+
+    private val takePicture =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            val uri = pendingCameraUri
+            val file = pendingCameraFile
+            pendingCameraUri = null
+            pendingCameraFile = null
+
+            if (success && uri != null && file?.exists() == true && file.length() > 0L) {
+                startNewSession(uri)
+            } else {
+                file?.delete()
+                Snackbar.make(b.root, R.string.msg_camera_capture_failed, Snackbar.LENGTH_SHORT).show()
+            }
+        }
+
+    private val requestCameraPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) launchCameraCapture()
+            else Snackbar.make(b.root, R.string.msg_camera_permission_denied, Snackbar.LENGTH_SHORT).show()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,7 +149,11 @@ class MainActivity : AppCompatActivity() {
         b.swipeRefresh.setOnRefreshListener {
             // Sync pending if any
             lifecycleScope.launch {
-                (application as DiagramQAApp).repository.syncPending(application)
+                try {
+                    (application as DiagramQAApp).repository.syncPending(application)
+                } catch (_: Throwable) {
+                    Snackbar.make(b.root, R.string.msg_sync_failed, Snackbar.LENGTH_SHORT).show()
+                }
                 b.swipeRefresh.isRefreshing = false
             }
         }
@@ -140,10 +172,7 @@ class MainActivity : AppCompatActivity() {
     private fun showPicker() {
         ImagePickerSheet.show(supportFragmentManager,
             onCamera = {
-                // Use GetContent image/* for simplicity; in production you'd
-                // use a FileProvider + ACTION_IMAGE_CAPTURE to capture full
-                // photos. Fallback to gallery for now.
-                pickImage.launch("image/*")
+                startCameraFlow()
             },
             onGallery = {
                 pickImage.launch("image/*")
@@ -154,6 +183,37 @@ class MainActivity : AppCompatActivity() {
     private fun startNewSession(uri: Uri) {
         val title = "Session ${System.currentTimeMillis() % 100000}"
         vm.newSession(title, uri)
+    }
+
+    private fun startCameraFlow() {
+        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+            Snackbar.make(b.root, R.string.msg_camera_unavailable, Snackbar.LENGTH_SHORT).show()
+            return
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            launchCameraCapture()
+        } else {
+            requestCameraPermission.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    private fun launchCameraCapture() {
+        try {
+            val dir = File(cacheDir, "camera").apply { mkdirs() }
+            val file = File.createTempFile("diagram_capture_", ".jpg", dir)
+            val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+            pendingCameraFile = file
+            pendingCameraUri = uri
+            takePicture.launch(uri)
+        } catch (_: Throwable) {
+            pendingCameraFile?.delete()
+            pendingCameraFile = null
+            pendingCameraUri = null
+            Snackbar.make(b.root, R.string.msg_camera_capture_failed, Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     private fun openSession(session: com.diagramqa.app.data.local.SessionEntity) {

@@ -1,6 +1,8 @@
 package com.diagramqa.app
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -12,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +23,7 @@ import coil.load
 import coil.request.CachePolicy
 import com.diagramqa.app.databinding.ActivityQnaBinding
 import com.diagramqa.app.ui.adapter.ChatAdapter
+import com.diagramqa.app.ui.dialog.ImagePickerSheet
 import com.diagramqa.app.ui.viewmodel.QnAViewModel
 import com.diagramqa.app.util.HapticUtil
 import com.google.android.material.snackbar.Snackbar
@@ -31,14 +35,35 @@ class QnAActivity : AppCompatActivity() {
     private lateinit var b: ActivityQnaBinding
     private val vm: QnAViewModel by viewModels()
     private lateinit var adapter: ChatAdapter
+    private var pendingCameraUri: Uri? = null
+    private var pendingCameraFile: File? = null
 
     private val pickImage =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             if (uri != null) {
-                vm.newSession("New session", uri) { id ->
-                    loadSessionUi(id, "New session")
-                }
+                createSessionFromDiagram(uri)
             }
+        }
+
+    private val takePicture =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            val uri = pendingCameraUri
+            val file = pendingCameraFile
+            pendingCameraUri = null
+            pendingCameraFile = null
+
+            if (success && uri != null && file?.exists() == true && file.length() > 0L) {
+                createSessionFromDiagram(uri)
+            } else {
+                file?.delete()
+                Snackbar.make(b.root, R.string.msg_camera_capture_failed, Snackbar.LENGTH_SHORT).show()
+            }
+        }
+
+    private val requestCameraPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) launchCameraCapture()
+            else Snackbar.make(b.root, R.string.msg_camera_permission_denied, Snackbar.LENGTH_SHORT).show()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +102,7 @@ class QnAActivity : AppCompatActivity() {
         }
         b.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.action_change_diagram -> { pickImage.launch("image/*"); true }
+                R.id.action_change_diagram -> { showDiagramPicker(); true }
                 R.id.action_clear -> { confirmClear(); true }
                 R.id.action_share -> { shareCurrentSession(); true }
                 else -> false
@@ -100,17 +125,25 @@ class QnAActivity : AppCompatActivity() {
             }
         })
         b.btnSend.setOnClickListener { send() }
-        b.btnChangeDiagram.setOnClickListener { pickImage.launch("image/*") }
+        b.btnChangeDiagram.setOnClickListener { showDiagramPicker() }
     }
 
     private fun observe() {
         vm.session.observe(this) { session ->
             if (session != null) {
                 b.titleText.text = session.title
-                b.thumbDiagram.load(File(session.diagramPath)) {
-                    crossfade(true)
-                    diskCachePolicy(CachePolicy.ENABLED)
-                    memoryCachePolicy(CachePolicy.ENABLED)
+                val diagram = File(session.diagramPath)
+                if (diagram.exists()) {
+                    b.thumbDiagram.load(diagram) {
+                        crossfade(true)
+                        diskCachePolicy(CachePolicy.ENABLED)
+                        memoryCachePolicy(CachePolicy.ENABLED)
+                        placeholder(R.drawable.ic_diagram)
+                        error(R.drawable.ic_diagram)
+                    }
+                } else {
+                    b.thumbDiagram.setImageResource(R.drawable.ic_diagram)
+                    Snackbar.make(b.root, R.string.msg_diagram_load_failed, Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
@@ -173,6 +206,51 @@ class QnAActivity : AppCompatActivity() {
         b.titleText.text = title
     }
 
+    private fun showDiagramPicker() {
+        ImagePickerSheet.show(supportFragmentManager,
+            onCamera = { startCameraFlow() },
+            onGallery = { pickImage.launch("image/*") }
+        )
+    }
+
+    private fun createSessionFromDiagram(uri: Uri) {
+        val title = "Session ${System.currentTimeMillis() % 100000}"
+        vm.newSession(title, uri) { id ->
+            loadSessionUi(id, title)
+        }
+    }
+
+    private fun startCameraFlow() {
+        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+            Snackbar.make(b.root, R.string.msg_camera_unavailable, Snackbar.LENGTH_SHORT).show()
+            return
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            launchCameraCapture()
+        } else {
+            requestCameraPermission.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    private fun launchCameraCapture() {
+        try {
+            val dir = File(cacheDir, "camera").apply { mkdirs() }
+            val file = File.createTempFile("diagram_capture_", ".jpg", dir)
+            val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+            pendingCameraFile = file
+            pendingCameraUri = uri
+            takePicture.launch(uri)
+        } catch (_: Throwable) {
+            pendingCameraFile?.delete()
+            pendingCameraFile = null
+            pendingCameraUri = null
+            Snackbar.make(b.root, R.string.msg_camera_capture_failed, Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
     private fun send() {
         val text = b.inputMessage.text?.toString()?.trim() ?: ""
         if (text.isBlank()) {
@@ -209,7 +287,10 @@ class QnAActivity : AppCompatActivity() {
     private fun shareCurrentSession() {
         val session = vm.session.value ?: return
         val file = File(session.diagramPath)
-        if (!file.exists()) return
+        if (!file.exists()) {
+            Snackbar.make(b.root, R.string.msg_diagram_load_failed, Snackbar.LENGTH_SHORT).show()
+            return
+        }
         val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
         val share = Intent(Intent.ACTION_SEND).apply {
             type = "image/*"

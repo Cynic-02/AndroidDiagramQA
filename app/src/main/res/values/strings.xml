@@ -74,6 +74,9 @@
     <string name="msg_cache_cleared">Image cache cleared</string>
     <string name="msg_api_error">AI service unavailable. Please try again later.</string>
     <string name="msg_api_timeout">Request timed out. Check your connection and retry.</string>
+    <string name="msg_camera_unavailable">No camera app is available on this device.</string>
+    <string name="msg_camera_permission_denied">Camera permission is required to take a diagram photo.</string>
+    <string name="msg_camera_capture_failed">Could not capture the diagram. Please try again.</string>
 
     <!-- Dialogs -->
     <string name="dialog_confirm_clear">Clear chat?</string>

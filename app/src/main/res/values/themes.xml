@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- ===================== Base app theme (Material 3) ===================== -->
-    <style name="Theme.DiagramQA" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.DiagramQA" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand -->
         <item name="colorPrimary">@color/md_primary_light</item>
         <item name="colorOnPrimary">@color/md_on_primary_light</item>
@@ -50,7 +50,7 @@
     </style>
 
     <!-- Dark app theme overrides -->
-    <style name="Theme.DiagramQA.Dark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.DiagramQA.Dark" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand -->
         <item name="colorPrimary">@color/md_primary_dark</item>
         <item name="colorOnPrimary">@color/md_on_primary_dark</item>
@@ -91,7 +91,7 @@
     </style>
 
     <!-- Splash theme (Android 12 SplashScreen API) -->
-    <style name="Theme.DiagramQA.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.DiagramQA.Splash" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="windowSplashScreenBackground">@color/md_primary_light</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
         <item name="windowSplashScreenAnimationDuration">900</item>

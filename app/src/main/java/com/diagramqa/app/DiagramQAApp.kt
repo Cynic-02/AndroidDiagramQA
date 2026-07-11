@@ -16,11 +16,11 @@ import com.diagramqa.app.util.PreferencesManager
 class DiagramQAApp : Application() {
 
     val database: AppDatabase by lazy { AppDatabase.getInstance(this) }
-    val repository: DiagramRepository by lazy {
-        DiagramRepository(database, ApiClient.create(BuildConfig.BASE_URL))
-    }
     val preferences: PreferencesManager by lazy { PreferencesManager(this) }
     val networkMonitor: NetworkMonitor by lazy { NetworkMonitor(this) }
+    val repository: DiagramRepository by lazy {
+        DiagramRepository(database, ApiClient.create(BuildConfig.BASE_URL), networkMonitor)
+    }
 
     override fun onCreate() {
         super.onCreate()

@@ -1,89 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Brand primary (Indigo / Violet) -->
-    <color name="brand_seed">#5B4DFF</color>
-    <color name="brand_primary">#5B4DFF</color>
-    <color name="brand_primary_dark">#3F2FE0</color>
-    <color name="brand_secondary">#FF6B9D</color>
-    <color name="brand_tertiary">#1EC8A5</color>
+    <!-- Brand primary (Teal / Blue) -->
+    <color name="brand_seed">#006D77</color>
+    <color name="brand_primary">#006D77</color>
+    <color name="brand_primary_dark">#004E56</color>
+    <color name="brand_secondary">#2F5DA8</color>
+    <color name="brand_tertiary">#B46A00</color>
 
     <!-- Light scheme (Material You derived) -->
-    <color name="md_primary_light">#5B4DFF</color>
+    <color name="md_primary_light">#006D77</color>
     <color name="md_on_primary_light">#FFFFFF</color>
-    <color name="md_primary_container_light">#E4DEFF</color>
-    <color name="md_on_primary_container_light">#15006F</color>
-    <color name="md_secondary_light">#FF6B9D</color>
+    <color name="md_primary_container_light">#A7F0F5</color>
+    <color name="md_on_primary_container_light">#002023</color>
+    <color name="md_secondary_light">#2F5DA8</color>
     <color name="md_on_secondary_light">#FFFFFF</color>
-    <color name="md_secondary_container_light">#FFD9E2</color>
-    <color name="md_on_secondary_container_light">#3F001D</color>
-    <color name="md_tertiary_light">#00A896</color>
+    <color name="md_secondary_container_light">#D8E2FF</color>
+    <color name="md_on_secondary_container_light">#001A42</color>
+    <color name="md_tertiary_light">#B46A00</color>
     <color name="md_on_tertiary_light">#FFFFFF</color>
-    <color name="md_tertiary_container_light">#9CF1E2</color>
-    <color name="md_on_tertiary_container_light">#00201B</color>
+    <color name="md_tertiary_container_light">#FFDDB4</color>
+    <color name="md_on_tertiary_container_light">#392100</color>
     <color name="md_error_light">#BA1A1A</color>
     <color name="md_on_error_light">#FFFFFF</color>
     <color name="md_error_container_light">#FFDAD6</color>
     <color name="md_on_error_container_light">#410002</color>
-    <color name="md_background_light">#FDFBFF</color>
-    <color name="md_on_background_light">#1B1B21</color>
-    <color name="md_surface_light">#FDFBFF</color>
-    <color name="md_on_surface_light">#1B1B21</color>
-    <color name="md_surface_variant_light">#E5E1EC</color>
-    <color name="md_on_surface_variant_light">#47464F</color>
-    <color name="md_outline_light">#787680</color>
-    <color name="md_outline_variant_light">#C8C5D0</color>
-    <color name="md_surface_container_low_light">#F2EFF7</color>
-    <color name="md_surface_container_light">#EDEAF3</color>
-    <color name="md_surface_container_high_light">#E7E1ED</color>
+    <color name="md_background_light">#F7FAF9</color>
+    <color name="md_on_background_light">#171D1E</color>
+    <color name="md_surface_light">#F7FAF9</color>
+    <color name="md_on_surface_light">#171D1E</color>
+    <color name="md_surface_variant_light">#DCE4E4</color>
+    <color name="md_on_surface_variant_light">#404849</color>
+    <color name="md_outline_light">#707879</color>
+    <color name="md_outline_variant_light">#C0C8C8</color>
+    <color name="md_surface_container_low_light">#EEF3F2</color>
+    <color name="md_surface_container_light">#E8EEED</color>
+    <color name="md_surface_container_high_light">#E2E8E7</color>
 
     <!-- Dark scheme -->
-    <color name="md_primary_dark">#C6BFFF</color>
-    <color name="md_on_primary_dark">#2400A0</color>
-    <color name="md_primary_container_dark">#3F2FE0</color>
-    <color name="md_on_primary_container_dark">#E4DEFF</color>
-    <color name="md_secondary_dark">#FFB1C8</color>
-    <color name="md_on_secondary_dark">#5F112F</color>
-    <color name="md_secondary_container_dark">#7E294A</color>
-    <color name="md_on_secondary_container_dark">#FFD9E2</color>
-    <color name="md_tertiary_dark">#80D5C2</color>
-    <color name="md_on_tertiary_dark">#00382E</color>
-    <color name="md_tertiary_container_dark">#005144</color>
-    <color name="md_on_tertiary_container_dark">#9CF1E2</color>
+    <color name="md_primary_dark">#84D7DD</color>
+    <color name="md_on_primary_dark">#00363B</color>
+    <color name="md_primary_container_dark">#004F56</color>
+    <color name="md_on_primary_container_dark">#A7F0F5</color>
+    <color name="md_secondary_dark">#AEC6FF</color>
+    <color name="md_on_secondary_dark">#002F67</color>
+    <color name="md_secondary_container_dark">#164784</color>
+    <color name="md_on_secondary_container_dark">#D8E2FF</color>
+    <color name="md_tertiary_dark">#FFB95C</color>
+    <color name="md_on_tertiary_dark">#603800</color>
+    <color name="md_tertiary_container_dark">#885100</color>
+    <color name="md_on_tertiary_container_dark">#FFDDB4</color>
     <color name="md_error_dark">#FFB4AB</color>
     <color name="md_on_error_dark">#690005</color>
     <color name="md_error_container_dark">#93000A</color>
     <color name="md_on_error_container_dark">#FFDAD6</color>
-    <color name="md_background_dark">#131318</color>
-    <color name="md_on_background_dark">#E5E1E9</color>
-    <color name="md_surface_dark">#131318</color>
-    <color name="md_on_surface_dark">#E5E1E9</color>
-    <color name="md_surface_variant_dark">#47464F</color>
-    <color name="md_on_surface_variant_dark">#C8C5D0</color>
-    <color name="md_outline_dark">#918F9A</color>
-    <color name="md_outline_variant_dark">#47464F</color>
-    <color name="md_surface_container_low_dark">#1B1B21</color>
-    <color name="md_surface_container_dark">#1F1F26</color>
-    <color name="md_surface_container_high_dark">#2A2A31</color>
+    <color name="md_background_dark">#101819</color>
+    <color name="md_on_background_dark">#DFE4E3</color>
+    <color name="md_surface_dark">#101819</color>
+    <color name="md_on_surface_dark">#DFE4E3</color>
+    <color name="md_surface_variant_dark">#404849</color>
+    <color name="md_on_surface_variant_dark">#C0C8C8</color>
+    <color name="md_outline_dark">#8A9292</color>
+    <color name="md_outline_variant_dark">#404849</color>
+    <color name="md_surface_container_low_dark">#182021</color>
+    <color name="md_surface_container_dark">#1C2425</color>
+    <color name="md_surface_container_high_dark">#263031</color>
 
     <!-- Legacy aliases (kept for older references) -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="primary">#5B4DFF</color>
-    <color name="primary_dark">#3F2FE0</color>
-    <color name="accent">#FF6B9D</color>
+    <color name="primary">#006D77</color>
+    <color name="primary_dark">#004E56</color>
+    <color name="accent">#2F5DA8</color>
 
     <!-- Functional -->
-    <color name="status_online">#1EC8A5</color>
+    <color name="status_online">#00896F</color>
     <color name="status_offline">#E53935</color>
     <color name="status_syncing">#FFB300</color>
 
     <!-- Scrim & overlays -->
     <color name="scrim">#99000000</color>
     <color name="overlay_dim">#33000000</color>
+    <color name="glass_surface">#CCF7FAF9</color>
+    <color name="glass_surface_strong">#E6F7FAF9</color>
+    <color name="glass_stroke">#80FFFFFF</color>
+    <color name="glass_highlight">#66FFFFFF</color>
 
     <!-- Chat bubbles -->
-    <color name="bubble_user_light">#5B4DFF</color>
-    <color name="bubble_ai_light">#EDEAF3</color>
-    <color name="bubble_user_dark">#3F2FE0</color>
-    <color name="bubble_ai_dark">#2A2A31</color>
+    <color name="bubble_user_light">#006D77</color>
+    <color name="bubble_ai_light">#E8EEED</color>
+    <color name="bubble_user_dark">#004F56</color>
+    <color name="bubble_ai_dark">#263031</color>
 </resources>
