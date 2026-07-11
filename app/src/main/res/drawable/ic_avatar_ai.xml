@@ -1,0 +1,11 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp" android:height="32dp"
+    android:viewportWidth="32" android:viewportHeight="32">
+    <!-- AI avatar: stylized robot head -->
+    <path android:fillColor="#FF5B4DFF" android:pathData="M16,16m-16,0a16,16 0 1,0 32,0a16,16 0 1,0 -32,0"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M8,12 h16 v10 a2,2 0 0 1 -2,2 h-12 a2,2 0 0 1 -2,-2 z"/>
+    <path android:fillColor="#FF5B4DFF" android:pathData="M12,16 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/>
+    <path android:fillColor="#FF5B4DFF" android:pathData="M20,16 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M15,4 h2 v4 h-2 z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M14,20 h4 v1.5 h-4 z"/>
+</vector>

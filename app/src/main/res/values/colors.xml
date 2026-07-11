@@ -1,8 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Brand primary (Indigo / Violet) -->
+    <color name="brand_seed">#5B4DFF</color>
+    <color name="brand_primary">#5B4DFF</color>
+    <color name="brand_primary_dark">#3F2FE0</color>
+    <color name="brand_secondary">#FF6B9D</color>
+    <color name="brand_tertiary">#1EC8A5</color>
+
+    <!-- Light scheme (Material You derived) -->
+    <color name="md_primary_light">#5B4DFF</color>
+    <color name="md_on_primary_light">#FFFFFF</color>
+    <color name="md_primary_container_light">#E4DEFF</color>
+    <color name="md_on_primary_container_light">#15006F</color>
+    <color name="md_secondary_light">#FF6B9D</color>
+    <color name="md_on_secondary_light">#FFFFFF</color>
+    <color name="md_secondary_container_light">#FFD9E2</color>
+    <color name="md_on_secondary_container_light">#3F001D</color>
+    <color name="md_tertiary_light">#00A896</color>
+    <color name="md_on_tertiary_light">#FFFFFF</color>
+    <color name="md_tertiary_container_light">#9CF1E2</color>
+    <color name="md_on_tertiary_container_light">#00201B</color>
+    <color name="md_error_light">#BA1A1A</color>
+    <color name="md_on_error_light">#FFFFFF</color>
+    <color name="md_error_container_light">#FFDAD6</color>
+    <color name="md_on_error_container_light">#410002</color>
+    <color name="md_background_light">#FDFBFF</color>
+    <color name="md_on_background_light">#1B1B21</color>
+    <color name="md_surface_light">#FDFBFF</color>
+    <color name="md_on_surface_light">#1B1B21</color>
+    <color name="md_surface_variant_light">#E5E1EC</color>
+    <color name="md_on_surface_variant_light">#47464F</color>
+    <color name="md_outline_light">#787680</color>
+    <color name="md_outline_variant_light">#C8C5D0</color>
+    <color name="md_surface_container_low_light">#F2EFF7</color>
+    <color name="md_surface_container_light">#EDEAF3</color>
+    <color name="md_surface_container_high_light">#E7E1ED</color>
+
+    <!-- Dark scheme -->
+    <color name="md_primary_dark">#C6BFFF</color>
+    <color name="md_on_primary_dark">#2400A0</color>
+    <color name="md_primary_container_dark">#3F2FE0</color>
+    <color name="md_on_primary_container_dark">#E4DEFF</color>
+    <color name="md_secondary_dark">#FFB1C8</color>
+    <color name="md_on_secondary_dark">#5F112F</color>
+    <color name="md_secondary_container_dark">#7E294A</color>
+    <color name="md_on_secondary_container_dark">#FFD9E2</color>
+    <color name="md_tertiary_dark">#80D5C2</color>
+    <color name="md_on_tertiary_dark">#00382E</color>
+    <color name="md_tertiary_container_dark">#005144</color>
+    <color name="md_on_tertiary_container_dark">#9CF1E2</color>
+    <color name="md_error_dark">#FFB4AB</color>
+    <color name="md_on_error_dark">#690005</color>
+    <color name="md_error_container_dark">#93000A</color>
+    <color name="md_on_error_container_dark">#FFDAD6</color>
+    <color name="md_background_dark">#131318</color>
+    <color name="md_on_background_dark">#E5E1E9</color>
+    <color name="md_surface_dark">#131318</color>
+    <color name="md_on_surface_dark">#E5E1E9</color>
+    <color name="md_surface_variant_dark">#47464F</color>
+    <color name="md_on_surface_variant_dark">#C8C5D0</color>
+    <color name="md_outline_dark">#918F9A</color>
+    <color name="md_outline_variant_dark">#47464F</color>
+    <color name="md_surface_container_low_dark">#1B1B21</color>
+    <color name="md_surface_container_dark">#1F1F26</color>
+    <color name="md_surface_container_high_dark">#2A2A31</color>
+
+    <!-- Legacy aliases (kept for older references) -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="primary">#6200EE</color>
-    <color name="primary_dark">#3700B3</color>
-    <color name="accent">#03DAC5</color>
+    <color name="primary">#5B4DFF</color>
+    <color name="primary_dark">#3F2FE0</color>
+    <color name="accent">#FF6B9D</color>
+
+    <!-- Functional -->
+    <color name="status_online">#1EC8A5</color>
+    <color name="status_offline">#E53935</color>
+    <color name="status_syncing">#FFB300</color>
+
+    <!-- Scrim & overlays -->
+    <color name="scrim">#99000000</color>
+    <color name="overlay_dim">#33000000</color>
+
+    <!-- Chat bubbles -->
+    <color name="bubble_user_light">#5B4DFF</color>
+    <color name="bubble_ai_light">#EDEAF3</color>
+    <color name="bubble_user_dark">#3F2FE0</color>
+    <color name="bubble_ai_dark">#2A2A31</color>
 </resources>

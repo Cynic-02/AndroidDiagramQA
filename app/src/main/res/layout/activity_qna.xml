@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        app:liftOnScroll="true"
+        app:liftOnScrollTargetViewId="@id/recyclerChat">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/menu_qna"
+            app:navigationIcon="@drawable/ic_back"
+            app:navigationIconTint="?attr/colorOnSurface"
+            app:title=""
+            app:titleTextColor="?attr/colorOnSurface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <ImageView
+                        android:id="@+id/thumbDiagram"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="?attr/colorSurfaceContainerHigh"
+                        android:contentDescription="@string/cd_diagram_preview"
+                        android:scaleType="centerCrop" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/titleText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-medium"
+                        android:maxLines="1"
+                        android:text="@string/qna_title"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/statusText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/home_online"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
+
+        <!-- Offline banner -->
+        <LinearLayout
+            android:id="@+id/offlineBanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/md_error_container_light"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="@string/cd_offline_indicator"
+                android:src="@drawable/ic_no_wifi"
+                app:tint="@color/md_error_light" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/no_connection_title"
+                android:textColor="@color/md_on_error_container_light"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerChat"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="20dp"
+        android:overScrollMode="never"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <!-- Empty state when no messages yet -->
+    <LinearLayout
+        android:id="@+id/emptyState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:padding="36dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:alpha="0.7"
+            android:contentDescription="@string/cd_ai_avatar"
+            android:src="@drawable/ic_avatar_ai" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="18dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/qna_empty"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- AI typing indicator overlay -->
+    <LinearLayout
+        android:id="@+id/typingIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="14dp"
+        android:layout_marginBottom="90dp"
+        android:background="@drawable/bg_bubble_ai"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="14dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <View
+            android:id="@+id/typingDot1"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/dot_syncing" />
+
+        <View
+            android:id="@+id/typingDot2"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/dot_syncing" />
+
+        <View
+            android:id="@+id/typingDot3"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/dot_syncing" />
+    </LinearLayout>
+
+    <!-- Input bar -->
+    <LinearLayout
+        android:id="@+id/inputBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?attr/colorSurface"
+        android:elevation="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnChangeDiagram"
+            style="@style/Widget.DiagramQA.Button.Icon"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:contentDescription="@string/cd_change_diagram"
+            app:icon="@drawable/ic_diagram"
+            app:iconSize="22dp" />
+
+        <EditText
+            android:id="@+id/inputMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chat_input"
+            android:hint="@string/qna_hint"
+            android:imeOptions="actionSend"
+            android:inputType="textMultiLine|textCapSentences"
+            android:maxLines="4"
+            android:minHeight="48dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="?attr/colorOnSurface"
+            android:textColorHint="?attr/colorOnSurfaceVariant"
+            android:textSize="15sp"
+            tools:ignore="Autofill,LabelFor" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSend"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/bg_send_button"
+            android:contentDescription="@string/cd_send"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            app:backgroundTint="@null"
+            app:icon="@drawable/ic_send"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="22dp"
+            app:iconTint="?attr/colorOnPrimary"
+            app:rippleColor="#33FFFFFF" />
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

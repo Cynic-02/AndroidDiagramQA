@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ===================== Base app theme (Material 3) ===================== -->
+    <style name="Theme.DiagramQA" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand -->
+        <item name="colorPrimary">@color/md_primary_light</item>
+        <item name="colorOnPrimary">@color/md_on_primary_light</item>
+        <item name="colorPrimaryContainer">@color/md_primary_container_light</item>
+        <item name="colorOnPrimaryContainer">@color/md_on_primary_container_light</item>
+
+        <!-- Secondary -->
+        <item name="colorSecondary">@color/md_secondary_light</item>
+        <item name="colorOnSecondary">@color/md_on_secondary_light</item>
+        <item name="colorSecondaryContainer">@color/md_secondary_container_light</item>
+        <item name="colorOnSecondaryContainer">@color/md_on_secondary_container_light</item>
+
+        <!-- Tertiary -->
+        <item name="colorTertiary">@color/md_tertiary_light</item>
+        <item name="colorOnTertiary">@color/md_on_tertiary_light</item>
+        <item name="colorTertiaryContainer">@color/md_tertiary_container_light</item>
+        <item name="colorOnTertiaryContainer">@color/md_on_tertiary_container_light</item>
+
+        <!-- Error -->
+        <item name="colorError">@color/md_error_light</item>
+        <item name="colorOnError">@color/md_on_error_light</item>
+        <item name="colorErrorContainer">@color/md_error_container_light</item>
+        <item name="colorOnErrorContainer">@color/md_on_error_container_light</item>
+
+        <!-- Surfaces -->
+        <item name="android:colorBackground">@color/md_background_light</item>
+        <item name="colorOnBackground">@color/md_on_background_light</item>
+        <item name="colorSurface">@color/md_surface_light</item>
+        <item name="colorOnSurface">@color/md_on_surface_light</item>
+        <item name="colorSurfaceVariant">@color/md_surface_variant_light</item>
+        <item name="colorOnSurfaceVariant">@color/md_on_surface_variant_light</item>
+        <item name="colorOutline">@color/md_outline_light</item>
+        <item name="colorOutlineVariant">@color/md_outline_variant_light</item>
+
+        <!-- Status / navigation bars -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+
+        <!-- Misc -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowAnimationStyle">@style/Animation.DiagramQA.Activity</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- Dark app theme overrides -->
+    <style name="Theme.DiagramQA.Dark" parent="Theme.DiagramQA">
+        <!-- Primary brand -->
+        <item name="colorPrimary">@color/md_primary_dark</item>
+        <item name="colorOnPrimary">@color/md_on_primary_dark</item>
+        <item name="colorPrimaryContainer">@color/md_primary_container_dark</item>
+        <item name="colorOnPrimaryContainer">@color/md_on_primary_container_dark</item>
+
+        <!-- Secondary -->
+        <item name="colorSecondary">@color/md_secondary_dark</item>
+        <item name="colorOnSecondary">@color/md_on_secondary_dark</item>
+        <item name="colorSecondaryContainer">@color/md_secondary_container_dark</item>
+        <item name="colorOnSecondaryContainer">@color/md_on_secondary_container_dark</item>
+
+        <!-- Tertiary -->
+        <item name="colorTertiary">@color/md_tertiary_dark</item>
+        <item name="colorOnTertiary">@color/md_on_tertiary_dark</item>
+        <item name="colorTertiaryContainer">@color/md_tertiary_container_dark</item>
+        <item name="colorOnTertiaryContainer">@color/md_on_tertiary_container_dark</item>
+
+        <!-- Error -->
+        <item name="colorError">@color/md_error_dark</item>
+        <item name="colorOnError">@color/md_on_error_dark</item>
+        <item name="colorErrorContainer">@color/md_error_container_dark</item>
+        <item name="colorOnErrorContainer">@color/md_on_error_container_dark</item>
+
+        <!-- Surfaces -->
+        <item name="android:colorBackground">@color/md_background_dark</item>
+        <item name="colorOnBackground">@color/md_on_background_dark</item>
+        <item name="colorSurface">@color/md_surface_dark</item>
+        <item name="colorOnSurface">@color/md_on_surface_dark</item>
+        <item name="colorSurfaceVariant">@color/md_surface_variant_dark</item>
+        <item name="colorOnSurfaceVariant">@color/md_on_surface_variant_dark</item>
+        <item name="colorOutline">@color/md_outline_dark</item>
+        <item name="colorOutlineVariant">@color/md_outline_variant_dark</item>
+
+        <!-- Status / navigation bars -->
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+    </style>
+
+    <!-- Splash theme (Android 12 SplashScreen API) -->
+    <style name="Theme.DiagramQA.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/md_primary_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="windowSplashScreenAnimationDuration">900</item>
+        <item name="postSplashScreenTheme">@style/Theme.DiagramQA</item>
+        <item name="android:statusBarColor">@color/md_primary_light</item>
+        <item name="android:navigationBarColor">@color/md_primary_light</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!-- Fullscreen viewer theme -->
+    <style name="Theme.DiagramQA.Fullscreen" parent="Theme.DiagramQA">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@color/black</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <!-- ===================== Components ===================== -->
+    <style name="Widget.DiagramQA.Button" parent="Widget.Material3.Button">
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:stateListAnimator">@animator/button_elevation</item>
+        <item name="rippleColor">?attr/colorOnPrimary</item>
+        <item name="android:elevation">2dp</item>
+    </style>
+
+    <style name="Widget.DiagramQA.Button.Primary" parent="Widget.DiagramQA.Button">
+        <item name="backgroundTint">@drawable/bg_button_primary</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="iconTint">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="Widget.DiagramQA.Button.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:letterSpacing">0.02</item>
+        <item name="strokeColor">?attr/colorOutline</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Widget.DiagramQA.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Widget.DiagramQA.Button.Icon" parent="Widget.Material3.Button.IconButton">
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
+        <item name="rippleColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="Widget.DiagramQA.Button.FAB" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="borderWidth">0dp</item>
+        <item name="elevation">6dp</item>
+    </style>
+
+    <style name="Widget.DiagramQA.Button.ExtendedFAB" parent="Widget.Material3.ExtendedFloatingActionButton.Primary">
+        <item name="elevation">6dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- CardView -->
+    <style name="Widget.DiagramQA.CardView" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainerLow</item>
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="contentPadding">16dp</item>
+    </style>
+
+    <style name="Widget.DiagramQA.CardView.Elevated" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="contentPadding">16dp</item>
+    </style>
+
+    <!-- Text inputs -->
+    <style name="Widget.DiagramQA.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">?attr/colorPrimary</item>
+        <item name="boxBackgroundColor">?attr/colorSurface</item>
+        <item name="boxCornerRadiusBottomEnd">16dp</item>
+        <item name="boxCornerRadiusBottomStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">16dp</item>
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="hintTextColor">?attr/colorPrimary</item>
+    </style>
+
+    <!-- Chip -->
+    <style name="Widget.DiagramQA.Chip" parent="Widget.Material3.Chip.Assist">
+        <item name="chipBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipCornerRadius">12dp</item>
+    </style>
+
+    <!-- ===================== Activity transitions ===================== -->
+    <style name="Animation.DiagramQA.Activity" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/activity_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/activity_close_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/activity_close_exit</item>
+    </style>
+
+    <!-- BottomSheet -->
+    <style name="ThemeOverlay.DiagramQA.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.DiagramQA.BottomSheet</item>
+    </style>
+    <style name="Widget.DiagramQA.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.DiagramQA.BottomSheet</item>
+    </style>
+
+    <!-- Shape appearances -->
+    <style name="ShapeAppearance.DiagramQA.LargeComponent" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+    </style>
+    <style name="ShapeAppearance.DiagramQA.MediumComponent" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+    <style name="ShapeAppearance.DiagramQA.SmallComponent" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+    <style name="ShapeAppearance.DiagramQA.Pill" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+    <style name="ShapeAppearance.DiagramQA.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">28dp</item>
+        <item name="cornerSizeTopRight">28dp</item>
+    </style>
+
+</resources>

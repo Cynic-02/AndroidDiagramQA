@@ -1,213 +1,176 @@
 package com.diagramqa.app
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
-import android.webkit.JavascriptInterface
-import android.webkit.JsResult
-import android.webkit.ValueCallback
-import android.webkit.WebChromeClient
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.view.View
+import android.view.animation.AnimationUtils
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.diagramqa.app.databinding.ActivityMainBinding
+import com.diagramqa.app.ui.adapter.SessionsAdapter
+import com.diagramqa.app.ui.dialog.ImagePickerSheet
+import com.diagramqa.app.ui.viewmodel.HomeViewModel
+import com.diagramqa.app.util.HapticUtil
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var webView: WebView
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private var fileUploadCallback: ValueCallback<Array<Uri>>? = null
+    private lateinit var b: ActivityMainBinding
+    private val vm: HomeViewModel by viewModels()
+    private lateinit var adapter: SessionsAdapter
 
-    private val fileChooserLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data: Intent? = result.data
-            var results: Array<Uri>? = null
-            if (data != null) {
-                val dataString = data.dataString
-                val clipData = data.clipData
-                if (clipData != null) {
-                    results = Array(clipData.itemCount) { i -> clipData.getItemAt(i).uri }
-                } else if (dataString != null) {
-                    results = arrayOf(Uri.parse(dataString))
-                }
-            }
-            fileUploadCallback?.onReceiveValue(results)
-        } else {
-            fileUploadCallback?.onReceiveValue(null)
+    private val pickImage =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            if (uri != null) startNewSession(uri)
         }
-        fileUploadCallback = null
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        b = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(b.root)
 
-        webView = findViewById(R.id.webView)
-        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        setupRecycler()
+        setupFab()
+        setupToolbar()
+        observe()
 
-        setupWebView()
-        setupSwipeRefresh()
+        // Animate list entrance
+        b.recyclerSessions.layoutAnimation =
+            AnimationUtils.loadLayoutAnimation(this, R.anim.layout_animation_fall_down)
     }
 
-    private fun setupWebView() {
-        val settings = webView.settings
-        
-        // World-Class performance & rendering optimization settings
-        settings.javaScriptEnabled = true
-        settings.domStorageEnabled = true
-        settings.databaseEnabled = true
-        settings.loadWithOverviewMode = true
-        settings.useWideViewPort = true
-        settings.allowFileAccess = true
-        settings.allowContentAccess = true
-        
-        // Enable file caching to make the app feel incredibly fast on repeat launches
-        settings.cacheMode = WebSettings.LOAD_DEFAULT
-        
-        // Enable Mixed Content for HTTP/HTTPS compatibility
-        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-
-        // Enable hardware rendering acceleration
-        webView.setLayerType(WebView.LAYER_TYPE_HARDWARE, null)
-
-        // Inject the Javascript haptics interface
-        webView.addJavascriptInterface(WebAppInterface(this), "Android")
-
-        webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                if (url.startsWith("http://") || url.startsWith("https://")) {
-                    view.loadUrl(url)
-                    return true
-                }
-                return false
+    private fun setupRecycler() {
+        adapter = SessionsAdapter(
+            onStartSession = { showPicker() },
+            onOpenSession = { openSession(it) },
+            onLongPressSession = { confirmDelete(it) }
+        )
+        b.recyclerSessions.adapter = adapter
+        b.recyclerSessions.layoutManager = LinearLayoutManager(this)
+        b.recyclerSessions.setHasFixedSize(false)
+        b.recyclerSessions.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0 && b.fabNewSession.isExtended) b.fabNewSession.shrink()
+                else if (dy < 0 && !b.fabNewSession.isExtended) b.fabNewSession.extend()
             }
-
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                swipeRefreshLayout.isRefreshing = false
-                
-                // Inject custom CSS to make it feel like a native app (disabling browser highlights and text select overlays)
-                val cssOverride = """
-                    * {
-                        -webkit-tap-highlight-color: transparent !important;
-                        -webkit-touch-callout: none !important;
-                    }
-                """.trimIndent()
-                val js = "const style = document.createElement('style'); style.innerHTML = `$cssOverride`; document.head.appendChild(style);"
-                webView.evaluateJavascript(js, null)
-            }
-        }
-
-        webView.webChromeClient = object : WebChromeClient() {
-            // Handle file chooser requests (VLM uploads)
-            override fun onShowFileChooser(
-                webView: WebView?,
-                filePathCallback: ValueCallback<Array<Uri>>?,
-                fileChooserParams: FileChooserParams?
-            ): Boolean {
-                fileUploadCallback?.onReceiveValue(null)
-                fileUploadCallback = filePathCallback
-
-                val intent = fileChooserParams?.createIntent() ?: Intent(Intent.ACTION_GET_CONTENT).apply {
-                    type = "image/*"
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                }
-
-                try {
-                    fileChooserLauncher.launch(intent)
-                } catch (e: Exception) {
-                    fileUploadCallback?.onReceiveValue(null)
-                    fileUploadCallback = null
-                    return false
-                }
-                return true
-            }
-
-            // Bridge Javascript Alert popups to Android Material Dialogs
-            override fun onJsAlert(
-                view: WebView?,
-                url: String?,
-                message: String?,
-                result: JsResult?
-            ): Boolean {
-                AlertDialog.Builder(this@MainActivity)
-                    .setTitle("System Alert")
-                    .setMessage(message)
-                    .setPositiveButton(android.R.string.ok) { _, _ -> result?.confirm() }
-                    .setCancelable(false)
-                    .show()
-                return true
-            }
-
-            // Bridge Javascript Confirm popups to Android Material Dialogs
-            override fun onJsConfirm(
-                view: WebView?,
-                url: String?,
-                message: String?,
-                result: JsResult?
-            ): Boolean {
-                AlertDialog.Builder(this@MainActivity)
-                    .setTitle("System Confirmation")
-                    .setMessage(message)
-                    .setPositiveButton(android.R.string.ok) { _, _ -> result?.confirm() }
-                    .setNegativeButton(android.R.string.cancel) { _, _ -> result?.cancel() }
-                    .setCancelable(false)
-                    .show()
-                return true
-            }
-        }
-
-        webView.loadUrl(WEBSITE_URL)
+        })
     }
 
-    private fun setupSwipeRefresh() {
-        swipeRefreshLayout.setColorSchemeColors(resources.getColor(R.color.primary, theme))
-        swipeRefreshLayout.setOnRefreshListener {
-            webView.reload()
+    private fun setupFab() {
+        b.fabNewSession.setOnClickListener {
+            HapticUtil.light(it)
+            showPicker()
         }
     }
 
-    override fun onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack()
+    private fun setupToolbar() {
+        b.toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_settings -> {
+                    startActivity(Intent(this, SettingsActivity::class.java))
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.activity_exit)
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    private fun observe() {
+        vm.sessions.observe(this) { sessions ->
+            adapter.submitSessions(sessions)
+            b.emptyState.visibility =
+                if (sessions.isEmpty()) View.VISIBLE else View.GONE
+        }
+
+        vm.isOnline.observe(this) { online ->
+            updateStatusIndicator(online)
+            b.offlineBanner.visibility = if (online) View.GONE else View.VISIBLE
+            if (online) b.offlineBanner.startAnimation(
+                AnimationUtils.loadAnimation(this, R.anim.slide_out_top)
+            ) else b.offlineBanner.startAnimation(
+                AnimationUtils.loadAnimation(this, R.anim.slide_in_top)
+            )
+        }
+
+        vm.toast.observe(this) { msg ->
+            if (!msg.isNullOrBlank()) {
+                Snackbar.make(b.root, msg, Snackbar.LENGTH_SHORT).show()
+                vm.toastShown()
+            }
+        }
+
+        b.swipeRefresh.setColorSchemeColors(getColor(R.color.brand_primary))
+        b.swipeRefresh.setOnRefreshListener {
+            // Sync pending if any
+            lifecycleScope.launch {
+                (application as DiagramQAApp).repository.syncPending(application)
+                b.swipeRefresh.isRefreshing = false
+            }
+        }
+    }
+
+    private fun updateStatusIndicator(online: Boolean) {
+        if (online) {
+            b.statusDot.setBackgroundResource(R.drawable.dot_online)
+            b.statusText.text = getString(R.string.home_online)
         } else {
-            super.onBackPressed()
+            b.statusDot.setBackgroundResource(R.drawable.dot_offline)
+            b.statusText.text = getString(R.string.home_offline)
         }
     }
 
-    // Javascript interface for triggering native haptics
-    class WebAppInterface(private val context: Context) {
-        @JavascriptInterface
-        fun triggerHaptic(duration: Long) {
-            val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                vibratorManager.defaultVibrator
-            } else {
-                @Suppress("DEPRECATION")
-                context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    private fun showPicker() {
+        ImagePickerSheet.show(supportFragmentManager,
+            onCamera = {
+                // Use GetContent image/* for simplicity; in production you'd
+                // use a FileProvider + ACTION_IMAGE_CAPTURE to capture full
+                // photos. Fallback to gallery for now.
+                pickImage.launch("image/*")
+            },
+            onGallery = {
+                pickImage.launch("image/*")
             }
-            
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(duration)
-            }
-        }
+        )
     }
 
-    companion object {
-        private const val WEBSITE_URL = "http://10.0.2.2:3000"
+    private fun startNewSession(uri: Uri) {
+        val title = "Session ${System.currentTimeMillis() % 100000}"
+        vm.newSession(title, uri)
+    }
+
+    private fun openSession(session: com.diagramqa.app.data.local.SessionEntity) {
+        val intent = Intent(this, QnAActivity::class.java).apply {
+            putExtra(QnAActivity.EXTRA_SESSION_ID, session.id)
+            putExtra(QnAActivity.EXTRA_SESSION_TITLE, session.title)
+            putExtra(QnAActivity.EXTRA_DIAGRAM_PATH, session.diagramPath)
+        }
+        startActivity(intent)
+        overridePendingTransition(R.anim.slide_in_right, R.anim.activity_exit)
+    }
+
+    private fun confirmDelete(session: com.diagramqa.app.data.local.SessionEntity) {
+        HapticUtil.reject(b.root)
+        AlertDialog.Builder(this)
+            .setTitle(R.string.dialog_confirm_delete_session)
+            .setMessage(R.string.dialog_confirm_delete_session_msg)
+            .setNegativeButton(R.string.action_cancel, null)
+            .setPositiveButton(R.string.action_delete) { _, _ ->
+                vm.deleteSession(session)
+            }
+            .show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh status when coming back
+        updateStatusIndicator(vm.isOnline.value == true)
     }
 }

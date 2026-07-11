@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark theme overrides — uses Material 3 dark color set -->
+    <style name="Theme.DiagramQA" parent="Theme.DiagramQA.Dark" />
+</resources>

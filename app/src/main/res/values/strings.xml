@@ -1,3 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App identity -->
     <string name="app_name">DiagramQA</string>
+    <string name="app_tagline">Ask anything about any diagram</string>
+
+    <!-- Splash -->
+    <string name="splash_loading">Initializing AI engine</string>
+    <string name="splash_version">v2.0.0</string>
+    <string name="splash_brand">AR2-DDCQG</string>
+
+    <!-- Home -->
+    <string name="home_greeting">Hello there</string>
+    <string name="home_subtitle">Upload a diagram and start asking</string>
+    <string name="home_new_session">New Diagram Session</string>
+    <string name="home_recent">Recent Sessions</string>
+    <string name="home_empty_title">No sessions yet</string>
+    <string name="home_empty_subtitle">Your conversations will appear here. Tap the button above to begin.</string>
+    <string name="home_online">Online</string>
+    <string name="home_offline">Offline</string>
+    <string name="home_syncing">Syncing</string>
+    <string name="home_settings">Settings</string>
+
+    <!-- Q&A -->
+    <string name="qna_title">Diagram Chat</string>
+    <string name="qna_hint">Ask about this diagram</string>
+    <string name="qna_send">Send</string>
+    <string name="qna_change_diagram">Change diagram</string>
+    <string name="qna_clear_chat">Clear chat</string>
+    <string name="qna_typing">AI is thinking</string>
+    <string name="qna_empty">Ask your first question about the diagram</string>
+    <string name="qna_uploading">Uploading diagram</string>
+    <string name="qna_uploaded">Diagram uploaded</string>
+
+    <!-- No connection -->
+    <string name="no_connection_title">No Connection Available Now</string>
+    <string name="no_connection_subtitle">You can still browse your previous sessions. Reconnect to ask new questions.</string>
+    <string name="no_connection_retry">Retry Connection</string>
+    <string name="no_connection_view_offline">Continue Offline</string>
+
+    <!-- Image picker -->
+    <string name="picker_title">Select Diagram Source</string>
+    <string name="picker_camera">Take Photo</string>
+    <string name="picker_gallery">Choose from Gallery</string>
+    <string name="picker_cancel">Cancel</string>
+    <string name="picker_camera_perm_rationale">DiagramQA needs camera access to capture diagrams. Please grant the permission.</string>
+    <string name="picker_storage_perm_rationale">DiagramQA needs storage access to read diagrams. Please grant the permission.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_dark_mode">Dark mode</string>
+    <string name="settings_dark_mode_system">Follow system</string>
+    <string name="settings_dark_mode_on">Always on</string>
+    <string name="settings_dark_mode_off">Always off</string>
+    <string name="settings_data">Data &amp; Storage</string>
+    <string name="settings_clear_cache">Clear image cache</string>
+    <string name="settings_clear_history">Clear all sessions</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_backend">Backend endpoint</string>
+    <string name="settings_haptics">Haptic feedback</string>
+    <string name="settings_animations">Animations</string>
+
+    <!-- Messages -->
+    <string name="msg_offline_banner">You are offline. New questions will be queued.</string>
+    <string name="msg_synced">Pending questions synced</string>
+    <string name="msg_sync_failed">Could not sync. Will retry automatically.</string>
+    <string name="msg_diagram_too_large">Diagram is too large. Pick an image under 10 MB.</string>
+    <string name="msg_diagram_load_failed">Could not load that diagram. Try again.</string>
+    <string name="msg_question_empty">Type a question first</string>
+    <string name="msg_cleared">Chat cleared</string>
+    <string name="msg_history_cleared">All sessions cleared</string>
+    <string name="msg_cache_cleared">Image cache cleared</string>
+    <string name="msg_api_error">AI service unavailable. Please try again later.</string>
+    <string name="msg_api_timeout">Request timed out. Check your connection and retry.</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_confirm_clear">Clear chat?</string>
+    <string name="dialog_confirm_clear_msg">This will permanently remove every question and answer in this session.</string>
+    <string name="dialog_confirm_delete_session">Delete session?</string>
+    <string name="dialog_confirm_delete_session_msg">This session will be permanently deleted from this device.</string>
+    <string name="dialog_confirm_clear_history">Clear all sessions?</string>
+    <string name="dialog_confirm_clear_history_msg">All your offline and synced sessions will be permanently deleted.</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_share">Share</string>
+    <string name="action_save">Save</string>
+
+    <!-- A11y -->
+    <string name="cd_app_logo">DiagramQA logo</string>
+    <string name="cd_new_session">Start a new diagram session</string>
+    <string name="cd_send">Send question</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_more">More options</string>
+    <string name="cd_diagram_preview">Diagram preview</string>
+    <string name="cd_change_diagram">Change diagram</string>
+    <string name="cd_offline_indicator">Connection status indicator</string>
+    <string name="cd_settings">Settings</string>
+    <string name="cd_status_online">Online</string>
+    <string name="cd_status_offline">Offline</string>
+    <string name="cd_user_avatar">You</string>
+    <string name="cd_ai_avatar">AI Assistant</string>
+
+    <!-- Image viewer -->
+    <string name="viewer_share">Share diagram</string>
+
+    <!-- Sync states (background) -->
+    <string name="notif_channel_sync">Sync</string>
+    <string name="notif_channel_errors">Errors</string>
 </resources>

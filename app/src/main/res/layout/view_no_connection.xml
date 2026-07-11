@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <ImageView
+        android:id="@+id/iconState"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:alpha="0.95"
+        android:contentDescription="@string/cd_offline_indicator"
+        android:src="@drawable/ic_no_wifi"
+        app:tint="?attr/colorPrimary" />
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:text="@string/no_connection_title"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/subtitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:text="@string/no_connection_subtitle"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="14sp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnRetry"
+        style="@style/Widget.DiagramQA.Button.Primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:text="@string/no_connection_retry"
+        app:backgroundTint="@null"
+        app:icon="@drawable/ic_refresh" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnOffline"
+        style="@style/Widget.DiagramQA.Button.Secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:text="@string/no_connection_view_offline" />
+</LinearLayout>

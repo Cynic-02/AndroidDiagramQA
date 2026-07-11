@@ -1,0 +1,42 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Background gradient (violet) -->
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor" xmlns:aapt="http://schemas.android.com/aapt">
+            <gradient
+                android:startX="0" android:startY="0"
+                android:endX="108" android:endY="108"
+                android:type="linear">
+                <item android:offset="0" android:color="#FF5B4DFF"/>
+                <item android:offset="1" android:color="#FF3F2FE0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Decorative grid pattern (diagram vibe) -->
+    <group>
+        <path android:strokeColor="#33FFFFFF" android:strokeWidth="0.8" android:fillColor="#00000000"
+              android:pathData="M18,30 L90,30 M18,54 L90,54 M18,78 L90,78 M30,18 L30,90 M54,18 L54,90 M78,18 L78,90" />
+    </group>
+
+    <!-- Stylized diagram (flowchart nodes) -->
+    <path android:fillColor="#FFFFFFFF"
+          android:pathData="M38,38 m0,0 a4,4 0 0 1 4,-4 h10 a4,4 0 0 1 4,4 v6 a4,4 0 0 1 -4,4 h-10 a4,4 0 0 1 -4,-4 z"/>
+    <path android:fillColor="#FFFF6B9D"
+          android:pathData="M54,52 m0,0 a4,4 0 0 1 4,-4 h10 a4,4 0 0 1 4,4 v6 a4,4 0 0 1 -4,4 h-10 a4,4 0 0 1 -4,-4 z"/>
+    <path android:fillColor="#FF1EC8A5"
+          android:pathData="M38,66 m0,0 a4,4 0 0 1 4,-4 h10 a4,4 0 0 1 4,4 v6 a4,4 0 0 1 -4,4 h-10 a4,4 0 0 1 -4,-4 z"/>
+
+    <!-- Connectors -->
+    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="1.6" android:fillColor="#00000000"
+          android:pathData="M48,42 L52,46 M64,58 L60,62 M52,46 L52,52"/>
+
+    <!-- Question mark -->
+    <path android:fillColor="#FFFFFFFF"
+          android:pathData="M76,30 m-2,0 a2,2 0 1 0 4,0 a2,2 0 1 0 -4,0"/>
+    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="2.4" android:strokeLineCap="round" android:fillColor="#00000000"
+          android:pathData="M73,24 c0,-3 5,-3 5,0 c0,3 -5,2 -5,5 v2"/>
+</vector>

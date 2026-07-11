@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108"
+    android:alpha="0.95">
+    <!-- Splash logo (no background, used as windowSplashScreenAnimatedIcon) -->
+    <path android:fillColor="#FFFFFFFF"
+          android:pathData="M38,38 m0,0 a4,4 0 0 1 4,-4 h10 a4,4 0 0 1 4,4 v6 a4,4 0 0 1 -4,4 h-10 a4,4 0 0 1 -4,-4 z"/>
+    <path android:fillColor="#FFFF6B9D"
+          android:pathData="M54,52 m0,0 a4,4 0 0 1 4,-4 h10 a4,4 0 0 1 4,4 v6 a4,4 0 0 1 -4,4 h-10 a4,4 0 0 1 -4,-4 z"/>
+    <path android:fillColor="#FF1EC8A5"
+          android:pathData="M38,66 m0,0 a4,4 0 0 1 4,-4 h10 a4,4 0 0 1 4,4 v6 a4,4 0 0 1 -4,4 h-10 a4,4 0 0 1 -4,-4 z"/>
+    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="1.6" android:fillColor="#00000000"
+          android:pathData="M48,42 L52,46 M64,58 L60,62 M52,46 L52,52"/>
+    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="2.4" android:strokeLineCap="round" android:fillColor="#00000000"
+          android:pathData="M73,24 c0,-3 5,-3 5,0 c0,3 -5,2 -5,5 v2"/>
+    <path android:fillColor="#FFFFFFFF"
+          android:pathData="M76,30 m-2,0 a2,2 0 1 0 4,0 a2,2 0 1 0 -4,0"/>
+</vector>
