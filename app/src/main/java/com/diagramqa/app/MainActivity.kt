@@ -1,14 +1,23 @@
 package com.diagramqa.app
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
+import android.webkit.JavascriptInterface
+import android.webkit.JsResult
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
@@ -18,15 +27,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private var fileUploadCallback: ValueCallback<Array<Uri>>? = null
 
-    // Register Activity Result launcher for selecting files
     private val fileChooserLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             var results: Array<Uri>? = null
-            
-            // Check if there is data returned
             if (data != null) {
                 val dataString = data.dataString
                 val clipData = data.clipData
@@ -56,6 +62,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupWebView() {
         val settings = webView.settings
+        
+        // World-Class performance & rendering optimization settings
         settings.javaScriptEnabled = true
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
@@ -63,6 +71,18 @@ class MainActivity : AppCompatActivity() {
         settings.useWideViewPort = true
         settings.allowFileAccess = true
         settings.allowContentAccess = true
+        
+        // Enable file caching to make the app feel incredibly fast on repeat launches
+        settings.cacheMode = WebSettings.LOAD_DEFAULT
+        
+        // Enable Mixed Content for HTTP/HTTPS compatibility
+        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+
+        // Enable hardware rendering acceleration
+        webView.setLayerType(WebView.LAYER_TYPE_HARDWARE, null)
+
+        // Inject the Javascript haptics interface
+        webView.addJavascriptInterface(WebAppInterface(this), "Android")
 
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
@@ -76,11 +96,21 @@ class MainActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 swipeRefreshLayout.isRefreshing = false
+                
+                // Inject custom CSS to make it feel like a native app (disabling browser highlights and text select overlays)
+                val cssOverride = """
+                    * {
+                        -webkit-tap-highlight-color: transparent !important;
+                        -webkit-touch-callout: none !important;
+                    }
+                """.trimIndent()
+                val js = "const style = document.createElement('style'); style.innerHTML = `$cssOverride`; document.head.appendChild(style);"
+                webView.evaluateJavascript(js, null)
             }
         }
 
         webView.webChromeClient = object : WebChromeClient() {
-            // Handle file chooser requests (uploads)
+            // Handle file chooser requests (VLM uploads)
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
@@ -103,13 +133,46 @@ class MainActivity : AppCompatActivity() {
                 }
                 return true
             }
+
+            // Bridge Javascript Alert popups to Android Material Dialogs
+            override fun onJsAlert(
+                view: WebView?,
+                url: String?,
+                message: String?,
+                result: JsResult?
+            ): Boolean {
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle("System Alert")
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok) { _, _ -> result?.confirm() }
+                    .setCancelable(false)
+                    .show()
+                return true
+            }
+
+            // Bridge Javascript Confirm popups to Android Material Dialogs
+            override fun onJsConfirm(
+                view: WebView?,
+                url: String?,
+                message: String?,
+                result: JsResult?
+            ): Boolean {
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle("System Confirmation")
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok) { _, _ -> result?.confirm() }
+                    .setNegativeButton(android.R.string.cancel) { _, _ -> result?.cancel() }
+                    .setCancelable(false)
+                    .show()
+                return true
+            }
         }
 
-        // Load website URL
         webView.loadUrl(WEBSITE_URL)
     }
 
     private fun setupSwipeRefresh() {
+        swipeRefreshLayout.setColorSchemeColors(resources.getColor(R.color.primary, theme))
         swipeRefreshLayout.setOnRefreshListener {
             webView.reload()
         }
@@ -123,8 +186,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Javascript interface for triggering native haptics
+    class WebAppInterface(private val context: Context) {
+        @JavascriptInterface
+        fun triggerHaptic(duration: Long) {
+            val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                vibratorManager.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            }
+            
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(duration)
+            }
+        }
+    }
+
     companion object {
-        // Replace this with your hosted website URL in production
         private const val WEBSITE_URL = "http://10.0.2.2:3000"
     }
 }
