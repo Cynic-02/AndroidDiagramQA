@@ -30,11 +30,10 @@
         android:theme="@style/Theme.DiagramQA.Splash"
         tools:targetApi="34">
 
-        <!-- Splash — uses Android 12 SplashScreen API on supported devices -->
         <activity
             android:name=".SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.DiagramQA.Splash">
+            android:theme="@style/Theme.DiagramQA">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

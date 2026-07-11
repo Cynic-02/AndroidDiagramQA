@@ -7,7 +7,6 @@ import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.OvershootInterpolator
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.delay
@@ -16,8 +15,6 @@ import kotlinx.coroutines.launch
 class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Android 12 SplashScreen API — must be called before super.onCreate
-        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         val crashFile = java.io.File(filesDir, "crash_report.txt")
