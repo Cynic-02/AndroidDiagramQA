@@ -30,20 +30,22 @@ jobs:
         with:
           gradle-version: '8.5'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew || true
+      - name: Grant execute permission for Gradle wrappers
+        run: chmod +x ./gradlew ./android/gradlew || true
 
       - name: Build debug APK
+        working-directory: android
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Build release APK (no signing)
+        working-directory: android
         run: ./gradlew assembleRelease --no-daemon -x lintVitalRelease || true
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: DiagramQA-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -51,6 +53,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: DiagramQA-release-apk
-          path: app/build/outputs/apk/release/*.apk
+          path: android/app/build/outputs/apk/release/*.apk
           if-no-files-found: warn
           retention-days: 30
