@@ -25,7 +25,7 @@ import type {
 // ─── Base URL ────────────────────────────────────────────────────────────────
 // 10.0.2.2 is the special Android emulator alias for the host loopback.
 // On a real device replace with the machine's LAN IP or deployed URL.
-export const BASE_URL = 'http://10.0.2.2:3000';
+export const BASE_URL = 'https://diagrammind.vercel.app';
 const SERVER_URL_KEY = '@diagrammind_server_url';
 
 export async function getServerUrl(): Promise<string> {
