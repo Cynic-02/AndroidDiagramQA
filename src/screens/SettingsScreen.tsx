@@ -28,8 +28,8 @@ import { DiagramRepository } from '../repository/DiagramRepository';
 import { SwitchToggle } from '../components/ui/SwitchToggle';
 import { Tag } from '../components/ui/Tag';
 import { Card } from '../components/ui/Card';
+import { BASE_URL } from '../api/apiClient';
 
-const BACKEND_URL = 'http://10.0.2.2:8000';
 
 function darkModeLabel(mode: number) {
   if (mode === DARK_MODE_ON)  return 'On';
@@ -68,8 +68,9 @@ export const SettingsScreen: React.FC = () => {
     const next = nextDarkMode(darkMode);
     setDarkMode(next);
     await PreferencesManager.setDarkMode(next);
-    if (next === DARK_MODE_ON)  setMode('dark');
-    if (next === DARK_MODE_OFF) setMode('light');
+    if (next === DARK_MODE_ON)     setMode('dark');
+    if (next === DARK_MODE_OFF)    setMode('light');
+    if (next === DARK_MODE_SYSTEM) setMode('system');
   }, [darkMode, setMode]);
 
   const toggleAnimations = useCallback(async () => {
@@ -291,7 +292,7 @@ export const SettingsScreen: React.FC = () => {
           <View style={[styles.aboutRow, { borderTopColor: c.ink, borderTopWidth: 1, marginTop: 12, paddingTop: 12 }]}>
             <Text style={[styles.rowLabel, { color: c.text }]}>Backend</Text>
             <Text style={[styles.rowValue, { color: c.muted }]} numberOfLines={1}>
-              {BACKEND_URL.length > 36 ? BACKEND_URL.slice(0, 36) + '…' : BACKEND_URL}
+              {BASE_URL.length > 36 ? BASE_URL.slice(0, 36) + '…' : BASE_URL}
             </Text>
           </View>
         </Card>

@@ -45,7 +45,11 @@ function AppBootstrap({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!ready) return null; // show nothing while DB is initialising
+  if (!ready) {
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.colors.bg }} />
+    );
+  }
 
   return <>{children}</>;
 }

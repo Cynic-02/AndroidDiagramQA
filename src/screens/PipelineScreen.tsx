@@ -94,7 +94,7 @@ export const PipelineScreen: React.FC<Props> = ({ navigation, route }) => {
     return () => { cleanupRef.current?.(); };
   }, [sessionId, onStage, onLog, onDone, onError]);
 
-  const renderStage = ({ item }: { item: StageDef }) => {
+  const renderStage = useCallback(({ item }: { item: StageDef }) => {
     const st = stages[item.id] ?? { status: 'idle', message: item.desc, logs: [] };
     const isRunning = st.status === 'running';
     const dotColor  = statusColor(st.status, c.primary, c.muted);
@@ -134,7 +134,7 @@ export const PipelineScreen: React.FC<Props> = ({ navigation, route }) => {
         </View>
       </View>
     );
-  };
+  }, [stages, c, pulse]);
 
   return (
     <SafeAreaView style={[s.safe, { backgroundColor: c.bg }]}>

@@ -18,7 +18,7 @@ type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'Login'
 export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const { theme } = useTheme();
   const c = theme.colors;
-  const { login, loading, error, clearError } = useAuth();
+  const { login, loginAsGuest, loading, error, clearError } = useAuth();
 
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
@@ -33,6 +33,12 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
     if (ok) {
       navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
     }
+  };
+
+  const handleGuestLogin = async () => {
+    clearError();
+    await loginAsGuest();
+    navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
   };
 
   return (
@@ -93,6 +99,15 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
             title={loading ? 'Signing in…' : 'Sign In'}
             onPress={handleLogin}
             disabled={loading}
+            style={s.fullBtn}
+          />
+
+          <View style={{ height: 12 }} />
+          <Button
+            title="Continue as Guest"
+            onPress={handleGuestLogin}
+            disabled={loading}
+            colors={[c.secondary, c.secondary]}
             style={s.fullBtn}
           />
 

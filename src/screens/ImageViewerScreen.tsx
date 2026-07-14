@@ -27,9 +27,13 @@ export const ImageViewerScreen: React.FC = () => {
   const c = theme.colors;
   const { path } = route.params;
 
+  // Normalise: accept either a plain path or a file:// URI
+  const plainPath = path.startsWith('file://') ? path.slice(7) : path;
+  const fileUri   = `file://${plainPath}`;
+
   const handleShare = useCallback(async () => {
-    try { await Share.share({ url: `file://${path}` }); } catch { /* ignore */ }
-  }, [path]);
+    try { await Share.share({ url: fileUri }); } catch { /* ignore */ }
+  }, [fileUri]);
 
   return (
     // Background is c.ink (near-black) rather than hardcoded #000 —
@@ -62,21 +66,33 @@ export const ImageViewerScreen: React.FC = () => {
       </View>
 
       {/* Full-screen image with pinch-to-zoom */}
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={styles.imageContainer}
-        maximumZoomScale={5}
-        minimumZoomScale={1}
-        centerContent
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-      >
-        <Image
-          source={{ uri: `file://${path}` }}
-          style={styles.image}
-          resizeMode="contain"
-        />
-      </ScrollView>
+      {plainPath ? (
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={styles.imageContainer}
+          maximumZoomScale={5}
+          minimumZoomScale={1}
+          centerContent
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        >
+          <Image
+            source={{ uri: fileUri }}
+            style={styles.image}
+            resizeMode="contain"
+          />
+        </ScrollView>
+      ) : (
+        <View style={[styles.imageContainer, { padding: 32 }]}>
+          <Text style={{ fontSize: 48, marginBottom: 16 }}>📊</Text>
+          <Text style={{ color: c.text, fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>
+            Diagram Not Cached
+          </Text>
+          <Text style={{ color: c.muted, fontSize: 13, textAlign: 'center', marginTop: 8 }}>
+            This session was synced from your account history and the original image is stored on the server.
+          </Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 };

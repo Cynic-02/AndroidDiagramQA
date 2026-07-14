@@ -27,8 +27,7 @@ import type {
 // ─── Base URL ────────────────────────────────────────────────────────────────
 // 10.0.2.2 is the special Android emulator alias for the host loopback.
 // On a real device replace with the machine's LAN IP or deployed URL.
-export const BASE_URL =
-  (typeof __DEV__ !== 'undefined' ? 'http://10.0.2.2:3000' : 'http://10.0.2.2:3000');
+export const BASE_URL = 'http://10.0.2.2:3000';
 
 const AUTH_TOKEN_KEY = '@diagrammind_auth_token';
 

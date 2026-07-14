@@ -14,25 +14,17 @@ import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import { useTheme } from '../theme/ThemeContext';
 import { ShadowGhost } from './ui/ShadowGhost';
-import { Message } from '../types/models';
+import { LocalChatMessage } from '../types/models';
 import { TimeFormat } from '../utils/TimeFormat';
 
 interface Props {
-  message: Message;
+  message: LocalChatMessage;
 }
 
 export const ChatBubble: React.FC<Props> = ({ message }) => {
   const { theme, tokens } = useTheme();
   const c = theme.colors;
-  const { role, content, timestamp, isPending, errorState } = message;
-
-  if (role === 'system') {
-    return (
-      <View style={styles.systemRow}>
-        <Text style={[styles.systemText, { color: c.muted }]}>{content}</Text>
-      </View>
-    );
-  }
+  const { role, content, createdAt } = message;
 
   const isUser = role === 'user';
   const { dx, dy } = tokens.hardShadow.badge; // 3px shadow for bubbles
@@ -63,10 +55,8 @@ export const ChatBubble: React.FC<Props> = ({ message }) => {
               <Text style={[styles.content, { color: c.surface }]}>{content}</Text>
               <View style={styles.meta}>
                 <Text style={[styles.time, { color: c.muted }]}>
-                  {TimeFormat.clock(timestamp)}
+                  {TimeFormat.clock(createdAt)}
                 </Text>
-                {isPending && <Text style={styles.statusIcon}>⏳</Text>}
-                {!!errorState && <Text style={styles.statusIcon}>⚠️</Text>}
               </View>
             </LinearGradient>
           ) : (
@@ -88,10 +78,8 @@ export const ChatBubble: React.FC<Props> = ({ message }) => {
                 <Text style={[styles.content, { color: c.text }]}>{content}</Text>
                 <View style={styles.meta}>
                   <Text style={[styles.time, { color: c.muted }]}>
-                    {TimeFormat.clock(timestamp)}
+                    {TimeFormat.clock(createdAt)}
                   </Text>
-                  {isPending && <Text style={styles.statusIcon}>⏳</Text>}
-                  {!!errorState && <Text style={styles.statusIcon}>⚠️</Text>}
                 </View>
               </View>
             </>
@@ -106,12 +94,9 @@ const styles = StyleSheet.create({
   row:        { paddingHorizontal: 12, paddingVertical: 4 },
   rowRight:   { alignItems: 'flex-end' },
   rowLeft:    { alignItems: 'flex-start' },
-  systemRow:  { alignItems: 'center', paddingVertical: 8, paddingHorizontal: 24 },
-  systemText: { fontSize: 11, fontStyle: 'italic' },
   content:    { fontSize: 14, lineHeight: 20 },
   meta:       { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
   time:       { fontSize: 10 },
-  statusIcon: { fontSize: 10 },
 });
 
 export default ChatBubble;

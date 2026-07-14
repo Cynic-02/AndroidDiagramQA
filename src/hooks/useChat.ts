@@ -19,11 +19,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { DiagramRepository } from '../repository/DiagramRepository';
 import { NetworkMonitor } from '../utils/NetworkMonitor';
-import { Session, Message } from '../types/models';
+import { Session, LocalChatMessage } from '../types/models';
 
 export function useChat() {
   const [session, setSession] = useState<Session | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<LocalChatMessage[]>([]);
   const [isOnline, setIsOnline] = useState(NetworkMonitor.isConnected());
   const [sending, setSending] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -47,7 +47,8 @@ export function useChat() {
 
   const reloadMessages = useCallback(async (sessionId: string) => {
     try {
-      const msgs = await DiagramRepository.getMessages(sessionId);
+      // Read from chat_messages table (where AI replies are stored)
+      const msgs = await DiagramRepository.getChatMessages(sessionId);
       if (isMounted.current) setMessages(msgs);
     } catch { /* silent */ }
   }, []);
@@ -153,11 +154,13 @@ export function useChat() {
     }
   }, [session, reloadMessages, reloadSession]);
 
-  // Auto-sync when connection is restored
+  // Auto-sync when connection is restored (false → true transition only, not on mount)
+  const prevOnlineRef = useRef<boolean | null>(null);
   useEffect(() => {
-    if (isOnline && session?.id) {
+    if (prevOnlineRef.current === false && isOnline && session?.id) {
       onConnectionRestored();
     }
+    prevOnlineRef.current = isOnline;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOnline]);
 

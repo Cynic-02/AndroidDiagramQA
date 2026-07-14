@@ -61,8 +61,7 @@ export const SplashScreen: React.FC = () => {
     // After 1100ms check auth state and route
     const timer = setTimeout(async () => {
       try {
-        const { TokenStore } = await import('../api/apiClient');
-        const { apiGetMe }   = await import('../api/apiClient');
+        const { TokenStore, apiGetMe } = await import('../api/apiClient');
         const token = await TokenStore.get();
         let authed = false;
         if (token) {

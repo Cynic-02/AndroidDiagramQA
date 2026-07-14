@@ -50,13 +50,14 @@ import type {
   FinalQAItem,
   StageEvent,
   StageStatus,
+  StageId,
   LogLine,
   HistoryItem,
   AppStats,
   GradeResult,
   RunRecord,
 } from '../types/models';
-import { toSession, toMessage } from '../types/models';
+import { toSession } from '../types/models';
 
 // ─── Result type (sealed union) ───────────────────────────────────────────────
 export type Result<T> =
@@ -69,9 +70,14 @@ export type Result<T> =
 /** Copy a content:// or file:// URI to internal app storage, return new path. */
 async function copyToInternal(uri: string): Promise<string> {
   const dest = `${RNFS.DocumentDirectoryPath}/diagram_${Date.now()}.jpg`;
-  if (uri.startsWith('content://') || uri.startsWith('file://')) {
+  if (uri.startsWith('content://')) {
+    // RNFS supports content:// URIs on Android natively
+    await RNFS.copyFile(uri, dest);
+  } else if (uri.startsWith('file://')) {
+    // Strip the scheme to get raw filesystem path
     await RNFS.copyFile(uri.replace('file://', ''), dest);
   } else {
+    // Plain filesystem path
     await RNFS.copyFile(uri, dest);
   }
   return dest;
@@ -109,6 +115,37 @@ export const DiagramRepository = {
     questionCount = 4,
     mcqOnly = false
   ): Promise<Result<Session>> {
+    const token = await TokenStore.get();
+    const isGuest = token === 'guest_token';
+
+    if (isGuest) {
+      try {
+        const localPath = await copyToInternal(imageUri);
+        const now = Date.now();
+        const sessionRow: SessionRow = {
+          id:                uuidv4(),
+          title,
+          diagram_path:      localPath,
+          diagram_remote_id: `guest_diag_${uuidv4()}`,
+          run_id:            `guest_run_${uuidv4()}`,
+          bloom_level:       bloomLevel,
+          status:            'running',
+          created_at:        now,
+          updated_at:        now,
+          is_synced:         1,
+          qa_count:          0,
+          last_question:     null,
+          last_answer:       null,
+          folder_id:         null,
+        };
+
+        await SessionDao.upsert(sessionRow);
+        return { type: 'success', data: toSession(sessionRow) };
+      } catch (err) {
+        return { type: 'error', message: err instanceof Error ? err.message : 'Failed to create guest session' };
+      }
+    }
+
     const isOnline = NetworkMonitor.isConnected();
     if (!isOnline) {
       return { type: 'offline' };
@@ -193,6 +230,138 @@ export const DiagramRepository = {
   ): () => void {
     const { runId } = session;
     if (!runId) { onError('No run ID — cannot stream pipeline.'); return () => {}; }
+
+    if (runId.startsWith('guest_run_')) {
+      let active = true;
+      const timeouts: any[] = [];
+      const runMock = async () => {
+        const mockStages: { stage: StageId; msg: string; logs: string[] }[] = [
+          { stage: 'extraction', msg: 'Parsing diagram structure locally...', logs: ['Detecting nodes...', 'Extracting arrows...'] },
+          { stage: 'generation', msg: 'Generating Bloom-level questions...', logs: ['Creating question candidates...', 'Formatting answers...'] },
+          { stage: 'answering', msg: 'Answering from diagram only...', logs: ['Executing vision-QA...', 'Verifying accuracy...'] },
+          { stage: 'verification', msg: 'Critic checking QA pairs...', logs: ['Verifying terminology...', 'Scoring difficulty...'] },
+        ];
+
+        let timeOffset = 1000;
+        for (const item of mockStages) {
+          if (!active) return;
+          const t1 = setTimeout(() => {
+            if (!active) return;
+            onStage({ runId, stage: item.stage, status: 'running', message: item.msg, timestamp: Date.now() });
+            onLog({ runId, stage: item.stage, level: 'info', text: item.logs[0] });
+          }, timeOffset);
+          const t2 = setTimeout(() => {
+            if (!active) return;
+            onLog({ runId, stage: item.stage, level: 'success', text: item.logs[1] });
+            onStage({ runId, stage: item.stage, status: 'done', message: 'Done.', timestamp: Date.now() });
+          }, timeOffset + 2000);
+          timeouts.push(t1, t2);
+          timeOffset += 3000;
+        }
+
+        // Final results stage
+        const tDone = setTimeout(async () => {
+          if (!active) return;
+          const bloom = session.bloomLevel ?? 'Understand';
+          const mockQAs: FinalQAItem[] = [
+            {
+              id: `mock_q1_${uuidv4()}`,
+              question: `Identify the main components depicted in this diagram under ${bloom} level.`,
+              answer: 'The diagram shows a feedback loop system with input, process, output, and feedback block.',
+              bloomLevel: bloom,
+              cognitiveSkill: 'Identification',
+              verification: 'pass',
+              score: 0.95,
+              questionType: 'short-answer',
+            },
+            {
+              id: `mock_q2_${uuidv4()}`,
+              question: 'Which element is responsible for processing the output feedback?',
+              answer: 'The feedback block.',
+              bloomLevel: bloom,
+              cognitiveSkill: 'Recall',
+              verification: 'pass',
+              score: 0.92,
+              questionType: 'mcq',
+              options: ['Input Controller', 'Feedback Block', 'Main Process', 'Output Gate'],
+              correctOptionIndex: 1,
+            },
+            {
+              id: `mock_q3_${uuidv4()}`,
+              question: 'Explain the role of the input signal in this architecture.',
+              answer: 'The input signal initiates the entire state flow, setting initial parameters for the main process.',
+              bloomLevel: bloom,
+              cognitiveSkill: 'Explanation',
+              verification: 'pass',
+              score: 0.88,
+              questionType: 'short-answer',
+            },
+            {
+              id: `mock_q4_${uuidv4()}`,
+              question: 'What happens if the feedback block is removed?',
+              answer: 'The system runs in an open loop with no regulatory correction.',
+              bloomLevel: bloom,
+              cognitiveSkill: 'Analysis',
+              verification: 'pass',
+              score: 0.90,
+              questionType: 'mcq',
+              options: ['System stabilizes', 'System runs in open loop', 'System halts completely', 'No change'],
+              correctOptionIndex: 1,
+            }
+          ];
+
+          try {
+            await QuestionDao.clearForSession(session.id);
+            for (const item of mockQAs) {
+              await QuestionDao.upsert({
+                id:                   item.id,
+                session_id:           session.id,
+                bloom_level:          item.bloomLevel,
+                type:                 item.questionType === 'mcq' ? 'MCQ' : 'SHORT',
+                text:                 item.question,
+                options:              item.options ? JSON.stringify(item.options) : null,
+                answer:               item.answer,
+                explanation:          item.explanation ?? null,
+                verification_score:   Math.round(item.score * 100),
+                verification_verdict: item.verification.toUpperCase(),
+                is_approved:          1,
+                correct_option_index: item.correctOptionIndex ?? null,
+              });
+            }
+
+            await SessionDao.updateSummary(
+              session.id,
+              mockQAs.length,
+              mockQAs[0].question,
+              mockQAs[0].answer,
+              Date.now()
+            );
+            await SessionDao.updateStatus(session.id, 'completed', mockQAs.length);
+
+            onStage({
+              runId,
+              stage: 'results',
+              status: 'done',
+              message: 'Pipeline completed successfully.',
+              data: mockQAs,
+              timestamp: Date.now()
+            });
+
+            onDone();
+          } catch (e) {
+            onError(e instanceof Error ? e.message : 'Database error in mock pipeline');
+          }
+        }, timeOffset);
+        timeouts.push(tDone);
+      };
+
+      runMock();
+
+      return () => {
+        active = false;
+        timeouts.forEach(clearTimeout);
+      };
+    }
 
     const controller = new AbortController();
     const token = (async () => TokenStore.get())();
@@ -352,6 +521,35 @@ export const DiagramRepository = {
     message: string
   ): Promise<Result<string>> {
     if (!session.runId) return { type: 'error', message: 'No run ID for this session.' };
+
+    if (session.runId.startsWith('guest_run_')) {
+      try {
+        const userMsgId = uuidv4();
+        await ChatMessageDao.insert({
+          id:         userMsgId,
+          session_id: session.id,
+          role:       'user',
+          content:    message,
+          created_at: Date.now(),
+        });
+
+        // Mock assistant response
+        const reply = `[Guest Mode Analysis] You asked: "${message}". In this diagram, we see clear structural elements including flows and processes. Please sign in to use advanced GPT vision analysis on this diagram!`;
+        
+        await ChatMessageDao.insert({
+          id:         uuidv4(),
+          session_id: session.id,
+          role:       'assistant',
+          content:    reply,
+          created_at: Date.now(),
+        });
+
+        return { type: 'success', data: reply };
+      } catch (err) {
+        return { type: 'error', message: err instanceof Error ? err.message : 'Chat failed' };
+      }
+    }
+
     if (!NetworkMonitor.isConnected()) return { type: 'offline' };
 
     try {
@@ -412,6 +610,23 @@ export const DiagramRepository = {
     studentAnswer: string
   ): Promise<Result<GradeResult>> {
     if (!session.runId) return { type: 'error', message: 'No run ID' };
+
+    if (session.runId.startsWith('guest_run_')) {
+      const score = Math.min(100, Math.max(30, Math.round(30 + Math.random() * 70)));
+      return {
+        type: 'success',
+        data: {
+          score,
+          feedback: score >= 70
+            ? 'Excellent answer! You captured the key concepts of the feedback loops correctly.'
+            : 'Good attempt, but you missed some of the detailed flow mechanics. Focus on input/output feedback.',
+          conceptMastery: score >= 75,
+          weakConcepts: score < 70 ? ['Feedback flow', 'Regulatory loops'] : [],
+          studyTip: 'Try looking at the nodes connected directly to the feedback loop outputs.',
+        }
+      };
+    }
+
     if (!NetworkMonitor.isConnected()) return { type: 'offline' };
     try {
       const result = await apiGradeAnswer(session.runId, questionId, studentAnswer);
@@ -427,7 +642,8 @@ export const DiagramRepository = {
     total: number,
     answers: Record<string, string>
   ): Promise<void> {
-    if (!session.runId || !NetworkMonitor.isConnected()) return;
+    if (!session.runId || session.runId.startsWith('guest_run_')) return;
+    if (!NetworkMonitor.isConnected()) return;
     try {
       await apiSaveAttempt(session.runId, score, total, answers);
     } catch { /* best-effort */ }

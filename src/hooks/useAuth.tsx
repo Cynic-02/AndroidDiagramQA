@@ -35,6 +35,7 @@ interface AuthState {
   error: string | null;
   login: (body: LoginRequest) => Promise<boolean>;
   register: (body: RegisterRequest) => Promise<boolean>;
+  loginAsGuest: () => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
 }
@@ -93,15 +94,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // 2. Verify token with server (may be expired)
       const token = await TokenStore.get();
       if (token) {
-        const me = await apiGetMe();
-        if (isMounted.current) {
-          if (me) {
-            setUser(me);
-          } else {
-            // Token expired — clear everything
-            await TokenStore.clear();
-            await clearUserFromDb();
-            setUser(null);
+        if (token === 'guest_token') {
+          if (isMounted.current) {
+            setUser({ id: 'guest', email: 'guest@local', name: 'Guest User' });
+          }
+        } else {
+          const me = await apiGetMe();
+          if (isMounted.current) {
+            if (me) {
+              setUser(me);
+            } else {
+              // Token expired — clear everything
+              await TokenStore.clear();
+              await clearUserFromDb();
+              setUser(null);
+            }
           }
         }
       }
@@ -145,6 +152,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  const loginAsGuest = useCallback(async () => {
+    if (isMounted.current) { setLoading(true); setError(null); }
+    try {
+      const guestUser: AuthUser = { id: 'guest', email: 'guest@local', name: 'Guest User' };
+      await TokenStore.save('guest_token');
+      await saveUserToDb(guestUser, 'guest_token');
+      if (isMounted.current) setUser(guestUser);
+    } catch (err: any) {
+      if (isMounted.current) setError(err?.message ?? 'Guest login failed');
+    } finally {
+      if (isMounted.current) setLoading(false);
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     if (isMounted.current) setLoading(true);
     try { await apiLogout(); } catch { /* best-effort */ }
@@ -164,6 +185,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     error,
     login,
     register,
+    loginAsGuest,
     logout,
     clearError,
   };

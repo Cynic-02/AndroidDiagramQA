@@ -9,7 +9,7 @@ export interface ThemeColors {
   ink: string;
 }
 
-export type ThemeMode = 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark' | 'system';
 
 export interface Theme {
   mode: ThemeMode;

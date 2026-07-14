@@ -12,7 +12,7 @@
  *
  * Zero hardcoded colors.
  */
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, Pressable, StyleSheet,
   Alert, RefreshControl, Animated, SafeAreaView,
@@ -47,10 +47,12 @@ export const HomeScreen: React.FC = () => {
   const fabScale = useRef(new Animated.Value(1)).current;
   const lastScrollY = useRef(0);
 
-  // Toast
-  if (toast) {
-    Alert.alert('', toast, [{ text: 'OK', onPress: dismissToast }]);
-  }
+  // Toast — must be in useEffect to avoid side effects during render
+  useEffect(() => {
+    if (toast) {
+      Alert.alert('', toast, [{ text: 'OK', onPress: dismissToast }]);
+    }
+  }, [toast, dismissToast]);
 
   // FAB shrink/extend on scroll
   const fabVisible = useRef(true);
@@ -111,30 +113,11 @@ export const HomeScreen: React.FC = () => {
       navigation.navigate('QnA', {
         sessionId:    session.id,
         sessionTitle: session.title,
-        diagramPath:  session.diagramPath,
+        // diagramPath may be '' for remote-only sessions — QnAScreen shows placeholder
+        diagramPath:  session.diagramPath ?? '',
       });
     }
   }, [navigation]);
-
-  // ── Empty state — full Glass Card ────────────────────────────────────────
-  const EmptyState = () => (
-    <View style={{ marginHorizontal: 16, marginTop: 60 }}>
-      <Card padding={32}>
-        <View style={styles.emptyInner}>
-          <IconBadge><Text style={styles.emptyIcon}>📋</Text></IconBadge>
-          <Text style={[styles.emptyTitle, { color: c.text }]}>No sessions yet</Text>
-          <Text style={[styles.emptySubtitle, { color: c.muted }]}>
-            Tap + to upload a diagram and start asking questions
-          </Text>
-          <Button
-            title="+ New Session"
-            onPress={() => { HapticUtil.light(); setPickerVisible(true); }}
-            style={{ marginTop: 8, alignSelf: 'stretch' }}
-          />
-        </View>
-      </Card>
-    </View>
-  );
 
   // ── Status colors — from tokens.statusColors (the only deliberate non-palette hex) ─────
   const onlineColor  = tokens.statusColors.online;   // semantic green, same in both modes
@@ -186,7 +169,26 @@ export const HomeScreen: React.FC = () => {
         }
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        ListEmptyComponent={loading ? null : <EmptyState />}
+        ListEmptyComponent={
+          loading ? null : (
+            <View style={{ marginHorizontal: 16, marginTop: 60 }}>
+              <Card padding={32}>
+                <View style={styles.emptyInner}>
+                  <IconBadge><Text style={styles.emptyIcon}>📋</Text></IconBadge>
+                  <Text style={[styles.emptyTitle, { color: c.text }]}>No sessions yet</Text>
+                  <Text style={[styles.emptySubtitle, { color: c.muted }]}>
+                    Tap + to upload a diagram and start asking questions
+                  </Text>
+                  <Button
+                    title="+ New Session"
+                    onPress={() => { HapticUtil.light(); setPickerVisible(true); }}
+                    style={{ marginTop: 8, alignSelf: 'stretch' }}
+                  />
+                </View>
+              </Card>
+            </View>
+          )
+        }
         renderItem={({ item }) => (
           <SessionCard
             session={item}

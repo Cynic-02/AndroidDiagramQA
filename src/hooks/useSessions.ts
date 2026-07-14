@@ -43,14 +43,16 @@ export function useSessions() {
   // ── Network monitor ───────────────────────────────────────────────────────
   useEffect(() => {
     NetworkMonitor.start();
+    let prevOnline: boolean | null = null;
     const unsub = NetworkMonitor.subscribe(online => {
       if (!isMounted.current) return;
       setIsOnline(online);
-      if (online) {
-        // Auto-sync pending ops when connectivity is restored (mirrors QnAViewModel)
+      // Only auto-sync on genuine reconnection (false → true), not on mount
+      if (prevOnline === false && online) {
         DiagramRepository.syncPending().catch(() => {});
         refresh();
       }
+      prevOnline = online;
     });
     return unsub;
   }, [refresh]);

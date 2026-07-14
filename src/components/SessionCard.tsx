@@ -68,7 +68,9 @@ export const SessionCard: React.FC<Props> = ({ session, onPress, onLongPress }) 
           {/* Diagram thumbnail */}
           <View style={[styles.thumbContainer, { borderColor: c.ink }]}>
             <Image
-              source={{ uri: session.diagramPath ? `file://${session.diagramPath}` : undefined }}
+              source={{ uri: session.diagramPath
+                ? (session.diagramPath.startsWith('file://') ? session.diagramPath : `file://${session.diagramPath}`)
+                : undefined }}
               style={styles.thumb}
               resizeMode="cover"
             />

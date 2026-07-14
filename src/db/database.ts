@@ -14,12 +14,25 @@ import SQLite from 'react-native-sqlite-storage';
 SQLite.enablePromise(true);
 
 let db: SQLite.SQLiteDatabase | null = null;
+let dbOpenPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
 export async function getDb(): Promise<SQLite.SQLiteDatabase> {
   if (db) return db;
-  db = await SQLite.openDatabase({ name: 'diagramqa.db', location: 'default' });
-  await initSchema(db);
-  return db;
+  // Cache the Promise so concurrent calls share one connection attempt
+  if (!dbOpenPromise) {
+    dbOpenPromise = SQLite.openDatabase({ name: 'diagramqa.db', location: 'default' })
+      .then(async (opened) => {
+        await initSchema(opened);
+        db = opened;
+        dbOpenPromise = null;
+        return opened;
+      })
+      .catch((err) => {
+        dbOpenPromise = null; // allow retry on failure
+        throw err;
+      });
+  }
+  return dbOpenPromise;
 }
 
 export async function closeDb(): Promise<void> {

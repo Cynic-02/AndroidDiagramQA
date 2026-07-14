@@ -53,7 +53,7 @@ export const QnAScreen: React.FC = () => {
 
   const [input, setInput] = useState('');
   const [pickerVisible, setPickerVisible] = useState(false);
-  const listRef = useRef<FlatList>(null);
+  const listRef = useRef<FlatList<import('../types/models').LocalChatMessage>>(null);
 
   useEffect(() => {
     if (route.params?.sessionId) loadSession(route.params.sessionId);
@@ -65,8 +65,14 @@ export const QnAScreen: React.FC = () => {
     }
   }, [messages.length]);
 
-  if (toast) Alert.alert('', toast, [{ text: 'OK', onPress: dismissToast }]);
-  if (syncedToast) Alert.alert('Synced', 'Queued questions have been sent.', [{ text: 'OK', onPress: dismissSyncedToast }]);
+  // Toast handling — must be in useEffect to avoid side effects during render
+  useEffect(() => {
+    if (toast) Alert.alert('', toast, [{ text: 'OK', onPress: dismissToast }]);
+  }, [toast, dismissToast]);
+
+  useEffect(() => {
+    if (syncedToast) Alert.alert('Synced', 'Queued questions have been sent.', [{ text: 'OK', onPress: dismissSyncedToast }]);
+  }, [syncedToast, dismissSyncedToast]);
 
   const handleSend = useCallback(async () => {
     const text = input.trim();
@@ -96,7 +102,9 @@ export const QnAScreen: React.FC = () => {
 
   const shareSession = useCallback(async () => {
     if (!session) return;
-    try { await Share.share({ url: `file://${session.diagramPath}` }); } catch { /* ignore */ }
+    const p = session.diagramPath;
+    const uri = p.startsWith('file://') ? p : `file://${p}`;
+    try { await Share.share({ url: uri }); } catch { /* ignore */ }
   }, [session]);
 
   const diagramPath  = session?.diagramPath ?? route.params?.diagramPath;
@@ -105,21 +113,6 @@ export const QnAScreen: React.FC = () => {
   // Status colors — from tokens.statusColors (semantic; same in both modes)
   const onlineColor  = tokens.statusColors.online;
   const offlineColor = tokens.statusColors.offline;
-
-  // ── Empty state ───────────────────────────────────────────────────────────
-  const EmptyState = () => (
-    <View style={{ marginHorizontal: 16, marginTop: 40 }}>
-      <Card padding={28}>
-        <View style={styles.emptyInner}>
-          <IconBadge><Text style={{ fontSize: 24 }}>💬</Text></IconBadge>
-          <Text style={[styles.emptyTitle, { color: c.text }]}>Ask your first question</Text>
-          <Text style={[styles.emptySubtitle, { color: c.muted }]}>
-            Type a question about the diagram below and tap Send
-          </Text>
-        </View>
-      </Card>
-    </View>
-  );
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: c.bg }]}>
@@ -140,7 +133,11 @@ export const QnAScreen: React.FC = () => {
 
           {/* Diagram thumbnail — ink border + ghost shadow */}
           <Pressable
-            onPress={() => diagramPath && navigation.navigate('ImageViewer', { path: diagramPath })}
+            onPress={() => {
+              if (diagramPath) {
+                navigation.navigate('ImageViewer', { path: diagramPath });
+              }
+            }}
           >
             <View style={{ position: 'relative' }}>
               <View
@@ -153,7 +150,7 @@ export const QnAScreen: React.FC = () => {
               />
               {diagramPath ? (
                 <Image
-                  source={{ uri: `file://${diagramPath}` }}
+                  source={{ uri: diagramPath.startsWith('file://') ? diagramPath : `file://${diagramPath}` }}
                   style={[styles.thumb, { borderColor: c.ink }]}
                   resizeMode="cover"
                 />
@@ -196,7 +193,19 @@ export const QnAScreen: React.FC = () => {
           data={messages}
           keyExtractor={m => m.id}
           contentContainerStyle={{ paddingVertical: 12, paddingBottom: 8 }}
-          ListEmptyComponent={<EmptyState />}
+          ListEmptyComponent={
+            <View style={{ marginHorizontal: 16, marginTop: 40 }}>
+              <Card padding={28}>
+                <View style={styles.emptyInner}>
+                  <IconBadge><Text style={{ fontSize: 24 }}>💬</Text></IconBadge>
+                  <Text style={[styles.emptyTitle, { color: c.text }]}>Ask your first question</Text>
+                  <Text style={[styles.emptySubtitle, { color: c.muted }]}>
+                    Type a question about the diagram below and tap Send
+                  </Text>
+                </View>
+              </Card>
+            </View>
+          }
           renderItem={({ item }) => <ChatBubble message={item} />}
         />
 
