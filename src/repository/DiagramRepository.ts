@@ -23,7 +23,6 @@ import QuestionDao from '../db/questionDao';
 import ChatMessageDao from '../db/chatMessageDao';
 import {
   apiCreateRun,
-  apiGetRun,
   apiDeleteRun,
   apiChat,
   apiGetChatHistory,
@@ -38,7 +37,6 @@ import { NetworkMonitor } from '../utils/NetworkMonitor';
 import type {
   Session,
   SessionRow,
-  Message,
   LocalQuestion,
   LocalChatMessage,
   BloomLevel,
@@ -49,7 +47,6 @@ import type {
   HistoryItem,
   AppStats,
   GradeResult,
-  RunRecord,
 } from '../types/models';
 import { toSession } from '../types/models';
 
@@ -460,43 +457,7 @@ export const DiagramRepository = {
     return () => controller.abort();
   },
 
-  /**
-   * Poll GET /api/runs/[runId] — fallback when SSE drops.
-   * Returns the run record. Saves questions to local DB if completed.
-   */
-  async pollRunStatus(session: Session): Promise<RunRecord | null> {
-    if (!session.runId) return null;
-    try {
-      const run = await apiGetRun(session.runId);
 
-      if (run.status === 'completed' && run.finalQA && run.finalQA.length > 0) {
-        await QuestionDao.clearForSession(session.id);
-        for (const item of run.finalQA) {
-          await QuestionDao.upsert({
-            id:                   item.id,
-            session_id:           session.id,
-            bloom_level:          item.bloomLevel,
-            type:                 item.questionType?.toUpperCase() === 'MCQ' ? 'MCQ' : 'SHORT',
-            text:                 item.question,
-            options:              item.options ? JSON.stringify(item.options) : null,
-            answer:               item.answer,
-            explanation:          item.explanation ?? null,
-            verification_score:   Math.round(item.score * 100),
-            verification_verdict: item.verification.toUpperCase(),
-            is_approved:          1,
-            correct_option_index: item.correctOptionIndex ?? null,
-          });
-        }
-        await SessionDao.updateStatus(session.id, 'completed', run.finalQA.length);
-      } else if (run.status === 'failed') {
-        await SessionDao.updateStatus(session.id, 'failed', 0);
-      }
-
-      return run;
-    } catch {
-      return null;
-    }
-  },
 
   // ── QUESTIONS ──────────────────────────────────────────────────────────────
 
@@ -680,9 +641,7 @@ export const DiagramRepository = {
 
   // ── LEGACY offline message queue (pending_ops) ────────────────────────────
 
-  async getMessages(sessionId: string): Promise<Message[]> {
-    return MessageDao.getBySession(sessionId);
-  },
+
 
   async hasPending(): Promise<boolean> {
     const count = await PendingOpDao.count();

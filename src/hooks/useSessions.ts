@@ -26,11 +26,14 @@ export function useSessions() {
 
   // ── Load sessions from DB ─────────────────────────────────────────────────
   const refresh = useCallback(async () => {
+    if (isMounted.current) setLoading(true);
     try {
       const list = await DiagramRepository.getSessions();
       if (isMounted.current) setSessions(list);
     } catch (e: any) {
       if (isMounted.current) setToast(e?.message ?? 'Failed to load sessions');
+    } finally {
+      if (isMounted.current) setLoading(false);
     }
   }, []);
 
@@ -59,30 +62,7 @@ export function useSessions() {
 
   // ── Actions ───────────────────────────────────────────────────────────────
 
-  const newSession = useCallback(
-    async (title: string, imageUri: string, bloomLevel: import('../types/models').BloomLevel = 'Understand'): Promise<Session | null> => {
-      setLoading(true);
-      try {
-        const result = await DiagramRepository.createSession(title, imageUri, bloomLevel);
-        if (result.type === 'success') {
-          await refresh();
-          if (isMounted.current) setToast('Session created');
-          return result.data;
-        } else if (result.type === 'error') {
-          if (isMounted.current) setToast(result.message);
-        } else {
-          if (isMounted.current) setToast('You are offline. Connect to create a session.');
-        }
-        return null;
-      } catch (e: any) {
-        if (isMounted.current) setToast(`Could not load diagram: ${e?.message}`);
-        return null;
-      } finally {
-        if (isMounted.current) setLoading(false);
-      }
-    },
-    [refresh],
-  );
+
 
   const deleteSession = useCallback(
     async (session: Session) => {
@@ -123,7 +103,6 @@ export function useSessions() {
     isOnline,
     toast,
     loading,
-    newSession,
     deleteSession,
     clearAll,
     syncPending,
