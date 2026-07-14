@@ -12,7 +12,7 @@
  *
  * Zero hardcoded colors.
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View, Text, FlatList, Pressable, StyleSheet,
   Alert, RefreshControl, Animated, SafeAreaView,
@@ -27,6 +27,7 @@ import { OfflineBanner } from '../components/OfflineBanner';
 import { ImagePickerSheet } from '../components/ImagePickerSheet';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
 import { IconBadge } from '../components/ui/IconBadge';
 import { HapticUtil } from '../utils/HapticUtil';
 import { Session } from '../types/models';
@@ -44,7 +45,17 @@ export const HomeScreen: React.FC = () => {
 
   const [pickerVisible, setPickerVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const fabScale = useRef(new Animated.Value(1)).current;
+
+  const filteredSessions = useMemo(() => {
+    if (!searchQuery.trim()) return sessions;
+    const query = searchQuery.toLowerCase();
+    return sessions.filter(s =>
+      s.title.toLowerCase().includes(query) ||
+      (s.bloomLevel && s.bloomLevel.toLowerCase().includes(query))
+    );
+  }, [sessions, searchQuery]);
   const lastScrollY = useRef(0);
 
   // Toast — must be in useEffect to avoid side effects during render
@@ -162,9 +173,48 @@ export const HomeScreen: React.FC = () => {
       {/* Offline banner */}
       <OfflineBanner visible={!isOnline} />
 
+      {/* Search Bar */}
+      {sessions.length > 0 && (
+        <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 }}>
+          <View style={{ position: 'relative' }}>
+            {/* Shadow ghost */}
+            <View
+              style={{
+                position: 'absolute',
+                top: tokens.hardShadow.badge.dy,
+                left: tokens.hardShadow.badge.dx,
+                right: -tokens.hardShadow.badge.dx,
+                bottom: -tokens.hardShadow.badge.dy,
+                backgroundColor: c.ink,
+                borderRadius: tokens.radius.input,
+              }}
+            />
+            <Input
+              placeholder="Search sessions by title or bloom level..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              style={{ paddingRight: searchQuery ? 40 : 12 }}
+            />
+            {searchQuery ? (
+              <Pressable
+                onPress={() => setSearchQuery('')}
+                style={{
+                  position: 'absolute',
+                  right: 12,
+                  top: 10,
+                  padding: 4,
+                }}
+              >
+                <Text style={{ fontSize: 16, color: c.muted, fontWeight: 'bold' }}>×</Text>
+              </Pressable>
+            ) : null}
+          </View>
+        </View>
+      )}
+
       {/* Session list */}
       <FlatList
-        data={sessions}
+        data={filteredSessions}
         keyExtractor={s => s.id}
         contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
         refreshControl={
@@ -178,7 +228,7 @@ export const HomeScreen: React.FC = () => {
         onScroll={handleScroll}
         scrollEventThrottle={16}
         ListEmptyComponent={
-          loading ? null : (
+          loading ? null : sessions.length === 0 ? (
             <View style={{ marginHorizontal: 16, marginTop: 60 }}>
               <Card padding={32}>
                 <View style={styles.emptyInner}>
@@ -192,6 +242,18 @@ export const HomeScreen: React.FC = () => {
                     onPress={() => { HapticUtil.light(); setPickerVisible(true); }}
                     style={{ marginTop: 8, alignSelf: 'stretch' }}
                   />
+                </View>
+              </Card>
+            </View>
+          ) : (
+            <View style={{ marginHorizontal: 16, marginTop: 60 }}>
+              <Card padding={24}>
+                <View style={styles.emptyInner}>
+                  <Text style={{ fontSize: 28 }}>🔍</Text>
+                  <Text style={[styles.emptyTitle, { color: c.text }]}>No matches found</Text>
+                  <Text style={[styles.emptySubtitle, { color: c.muted, textAlign: 'center' }]}>
+                    Try adjusting your keywords or clear the search query.
+                  </Text>
                 </View>
               </Card>
             </View>
