@@ -514,6 +514,7 @@ export const DiagramRepository = {
     session: Session,
     message: string
   ): Promise<Result<string>> {
+    if (!session) return { type: 'error', message: 'Session is invalid.' };
     if (!session.runId) return { type: 'error', message: 'No run ID for this session.' };
 
     if (session.runId.startsWith('guest_run_')) {

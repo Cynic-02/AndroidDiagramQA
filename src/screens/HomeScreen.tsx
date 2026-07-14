@@ -54,6 +54,14 @@ export const HomeScreen: React.FC = () => {
     }
   }, [toast, dismissToast]);
 
+  // Refresh sessions whenever screen comes into focus (e.g. returning from Pipeline or Results)
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      refresh();
+    });
+    return unsubscribe;
+  }, [navigation, refresh]);
+
   // FAB shrink/extend on scroll
   const fabVisible = useRef(true);
   const handleScroll = (e: any) => {
