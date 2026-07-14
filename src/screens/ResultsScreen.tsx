@@ -48,7 +48,7 @@ export const ResultsScreen: React.FC<Props> = ({ navigation, route }) => {
     await Share.share({ message: text, title: 'DiagramMind Q&A Export' });
   }, [questions]);
 
-  const renderQuestion = ({ item, index }: { item: LocalQuestion; index: number }) => {
+  const renderQuestion = useCallback(({ item, index }: { item: LocalQuestion; index: number }) => {
     const isExpanded = expandedId === item.id;
     const isPass     = item.verificationVerdict?.toUpperCase() === 'PASS';
 
@@ -120,7 +120,7 @@ export const ResultsScreen: React.FC<Props> = ({ navigation, route }) => {
         </View>
       </View>
     );
-  };
+  }, [expandedId, c]);
 
   return (
     <SafeAreaView style={[s.safe, { backgroundColor: c.bg }]}>
