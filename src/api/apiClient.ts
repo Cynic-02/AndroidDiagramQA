@@ -26,13 +26,41 @@ import type {
 // 10.0.2.2 is the special Android emulator alias for the host loopback.
 // On a real device replace with the machine's LAN IP or deployed URL.
 export const BASE_URL = 'http://10.0.2.2:3000';
+const SERVER_URL_KEY = '@diagrammind_server_url';
+
+export async function getServerUrl(): Promise<string> {
+  try {
+    const saved = await AsyncStorage.getItem(SERVER_URL_KEY);
+    return saved ?? BASE_URL;
+  } catch {
+    return BASE_URL;
+  }
+}
+
+export async function setServerUrl(url: string): Promise<void> {
+  try {
+    const cleanUrl = url.trim();
+    if (cleanUrl) {
+      await AsyncStorage.setItem(SERVER_URL_KEY, cleanUrl);
+      client.defaults.baseURL = cleanUrl;
+    } else {
+      await AsyncStorage.removeItem(SERVER_URL_KEY);
+      client.defaults.baseURL = BASE_URL;
+    }
+  } catch {}
+}
 
 const AUTH_TOKEN_KEY = '@diagrammind_auth_token';
 
-const client = axios.create({
+export const client = axios.create({
   baseURL: BASE_URL,
   timeout: 60_000,
   headers: { 'Content-Type': 'application/json' },
+});
+
+// Auto-load custom server URL on startup
+getServerUrl().then((url) => {
+  client.defaults.baseURL = url;
 });
 
 // ── Request interceptor: attach Bearer token if we have one ─────────────────

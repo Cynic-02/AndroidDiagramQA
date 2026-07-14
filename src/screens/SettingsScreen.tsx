@@ -28,7 +28,8 @@ import { DiagramRepository } from '../repository/DiagramRepository';
 import { SwitchToggle } from '../components/ui/SwitchToggle';
 import { Tag } from '../components/ui/Tag';
 import { Card } from '../components/ui/Card';
-import { BASE_URL } from '../api/apiClient';
+import { BASE_URL, getServerUrl, setServerUrl } from '../api/apiClient';
+import { Input } from '../components/ui/Input';
 
 
 function darkModeLabel(mode: number) {
@@ -50,16 +51,19 @@ export const SettingsScreen: React.FC = () => {
   const [darkMode,          setDarkMode]          = useState(DARK_MODE_SYSTEM);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
   const [hapticsEnabled,    setHapticsEnabled]    = useState(true);
+  const [serverUrl,         setServerUrlState]    = useState('');
 
   useEffect(() => {
     Promise.all([
       PreferencesManager.getDarkMode(),
       PreferencesManager.getAnimationsEnabled(),
       PreferencesManager.getHapticsEnabled(),
-    ]).then(([dm, anim, haptic]) => {
+      getServerUrl(),
+    ]).then(([dm, anim, haptic, url]) => {
       setDarkMode(dm);
       setAnimationsEnabled(anim);
       setHapticsEnabled(haptic);
+      setServerUrlState(url);
     });
   }, []);
 
@@ -86,7 +90,10 @@ export const SettingsScreen: React.FC = () => {
     setHapticsEnabled(next);
     await PreferencesManager.setHapticsEnabled(next);
   }, [hapticsEnabled]);
-
+  const handleServerUrlChange = useCallback(async (newUrl: string) => {
+    setServerUrlState(newUrl);
+    await setServerUrl(newUrl);
+  }, []);
   const clearHistory = useCallback(() => {
     HapticUtil.reject();
     Alert.alert(
@@ -262,6 +269,36 @@ export const SettingsScreen: React.FC = () => {
           />
         </View>
 
+        {/* ── Backend Server URL ── */}
+        <Text style={[styles.sectionHeader, { color: c.muted }]}>BACKEND SERVER</Text>
+        <Card padding={16} style={{ marginBottom: 16 }}>
+          <Text style={[styles.rowLabel, { color: c.text, marginBottom: 8 }]}>API URL</Text>
+          <View style={{ position: 'relative', marginBottom: 8 }}>
+            {/* Shadow ghost */}
+            <View
+              style={{
+                position: 'absolute',
+                top: tokens.hardShadow.badge.dy,
+                left: tokens.hardShadow.badge.dx,
+                right: -tokens.hardShadow.badge.dx,
+                bottom: -tokens.hardShadow.badge.dy,
+                backgroundColor: c.ink,
+                borderRadius: tokens.radius.input,
+              }}
+            />
+            <Input
+              value={serverUrl}
+              onChangeText={handleServerUrlChange}
+              placeholder="https://your-app.vercel.app"
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+          </View>
+          <Text style={{ fontSize: 11, color: c.muted, marginTop: 4 }}>
+            Default: {BASE_URL} (Leave empty to reset to default)
+          </Text>
+        </Card>
+
         {/* ── About ── */}
         <Text style={[styles.sectionHeader, { color: c.muted }]}>ABOUT</Text>
 
@@ -269,12 +306,6 @@ export const SettingsScreen: React.FC = () => {
           <View style={styles.aboutRow}>
             <Text style={[styles.rowLabel, { color: c.text }]}>Version</Text>
             <Text style={[styles.rowValue, { color: c.muted }]}>1.0.0</Text>
-          </View>
-          <View style={[styles.aboutRow, { borderTopColor: c.ink, borderTopWidth: 1, marginTop: 12, paddingTop: 12 }]}>
-            <Text style={[styles.rowLabel, { color: c.text }]}>Backend</Text>
-            <Text style={[styles.rowValue, { color: c.muted }]} numberOfLines={1}>
-              {BASE_URL.length > 36 ? BASE_URL.slice(0, 36) + '…' : BASE_URL}
-            </Text>
           </View>
         </Card>
 
