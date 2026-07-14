@@ -28,7 +28,6 @@ import { TypingIndicator } from '../components/TypingIndicator';
 import { OfflineBanner } from '../components/OfflineBanner';
 import { ImagePickerSheet } from '../components/ImagePickerSheet';
 import { Card } from '../components/ui/Card';
-import { Button } from '../components/ui/Button';
 import { IconBadge } from '../components/ui/IconBadge';
 import { Input } from '../components/ui/Input';
 import { HapticUtil } from '../utils/HapticUtil';
@@ -47,7 +46,7 @@ export const QnAScreen: React.FC = () => {
   const {
     session, messages, isOnline, sending,
     toast, syncedToast,
-    loadSession, newSession, ask, clearChat,
+    loadSession, ask, clearChat,
     dismissToast, dismissSyncedToast,
   } = useChat();
 

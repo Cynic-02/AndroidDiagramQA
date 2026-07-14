@@ -9,14 +9,10 @@
  * Accepts all standard TextInput props via spread.
  */
 import React from 'react';
-import { TextInput, TextInputProps, ViewStyle } from 'react-native';
+import { TextInput, TextInputProps } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 
-interface InputProps extends TextInputProps {
-  containerStyle?: ViewStyle;
-}
-
-export const Input: React.FC<InputProps> = ({ containerStyle, style, ...rest }) => {
+export const Input: React.FC<TextInputProps> = ({ style, ...rest }) => {
   const { theme, tokens } = useTheme();
   const c = theme.colors;
 

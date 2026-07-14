@@ -9,14 +9,12 @@
  */
 import React, { useEffect, useRef } from 'react';
 import {
-  View, Text, Animated, StyleSheet, Dimensions,
+  View, Text, Animated, StyleSheet,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../theme/ThemeContext';
 import { NetworkMonitor } from '../utils/NetworkMonitor';
-
-const { width } = Dimensions.get('window');
 
 export const SplashScreen: React.FC = () => {
   const navigation = useNavigation<any>();

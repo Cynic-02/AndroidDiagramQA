@@ -8,7 +8,7 @@
  * Animated with Animated.spring for smooth thumb slide.
  */
 import React, { useRef, useEffect } from 'react';
-import { Pressable, Animated, View } from 'react-native';
+import { Pressable, Animated } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 
 interface SwitchToggleProps {

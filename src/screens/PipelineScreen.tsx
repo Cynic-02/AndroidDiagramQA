@@ -13,7 +13,7 @@ import { useTheme } from '../theme/ThemeContext';
 import { tokens } from '../theme/tokens';
 import { Button } from '../components/ui/Button';
 import DiagramRepository from '../repository/DiagramRepository';
-import type { Session, StageId, StageStatus, StageEvent, LogLine } from '../types/models';
+import type { StageId, StageStatus, StageEvent, LogLine } from '../types/models';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Pipeline'>;
@@ -51,7 +51,7 @@ export const PipelineScreen: React.FC<Props> = ({ navigation, route }) => {
   const { theme }  = useTheme();
   const c          = theme.colors;
 
-  const [session,  setSession]  = useState<Session | null>(null);
+
   const [stages,   setStages]   = useState<Record<string, StageState>>(initStages());
   const [done,     setDone]     = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -88,7 +88,6 @@ export const PipelineScreen: React.FC<Props> = ({ navigation, route }) => {
     (async () => {
       const s = await DiagramRepository.getSession(sessionId);
       if (!s) { setErrorMsg('Session not found.'); return; }
-      setSession(s);
       cleanupRef.current = DiagramRepository.streamPipeline(s, onStage, onLog, onDone, onError);
     })();
     return () => { cleanupRef.current?.(); };

@@ -157,25 +157,6 @@ export const SettingsScreen: React.FC = () => {
     </Pressable>
   );
 
-  const InfoRow = ({ label, value }: { label: string; value: string }) => (
-    <View
-      style={[
-        styles.row,
-        { borderColor: c.ink, overflow: 'hidden' },
-      ]}
-    >
-      <BlurView
-        style={StyleSheet.absoluteFill}
-        blurType={theme.mode === 'light' ? 'light' : 'dark'}
-        blurAmount={tokens.glass.blurAmount}
-        reducedTransparencyFallbackColor={c.surface}
-      />
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: c.bg, opacity: tokens.glass.cardFillOpacity }]} />
-      <Text style={[styles.rowLabel, { color: c.text }]}>{label}</Text>
-      <Text style={[styles.rowValue, { color: c.muted }]} numberOfLines={1}>{value}</Text>
-    </View>
-  );
-
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: c.bg }]}>
       {/* Glass Toolbar */}

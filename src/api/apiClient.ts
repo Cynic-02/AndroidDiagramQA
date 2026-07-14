@@ -20,8 +20,6 @@ import type {
   AppStats,
   AuthUser,
   BloomLevel,
-  FinalQAItem,
-  LocalQuestion,
 } from '../types/models';
 
 // ─── Base URL ────────────────────────────────────────────────────────────────

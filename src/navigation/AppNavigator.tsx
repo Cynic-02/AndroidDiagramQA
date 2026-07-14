@@ -12,7 +12,6 @@ import {
   createNativeStackNavigator,
   type NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
-import type { BloomLevel } from '../types/models';
 
 import { SplashScreen }    from '../screens/SplashScreen';
 import { HomeScreen }      from '../screens/HomeScreen';

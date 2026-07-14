@@ -39,7 +39,7 @@ export const HomeScreen: React.FC = () => {
 
   const {
     sessions, isOnline, toast, loading,
-    newSession, deleteSession, syncPending, dismissToast, refresh,
+    deleteSession, syncPending, dismissToast, refresh,
   } = useSessions();
 
   const [pickerVisible, setPickerVisible] = useState(false);
